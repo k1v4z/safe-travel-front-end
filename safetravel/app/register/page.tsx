@@ -1,60 +1,205 @@
-import React from 'react';
+"use client"
+import React, { useState } from 'react';
 import Image from 'next/image';
+import useValidation from '../hooks/useValidation';
+import { useRouter } from 'next/navigation';
 
-export default function Register() {
-  return (100
-    <div className="bg-gray- flex flex-col items-center justify-center font-poppins h-screen">
-      <div className="absolute right-12 top-5 text-sm leading-5 text-black">
-        <p>Already have an account? <a className="border-b border-gray-800 hover:text-blue-500 hover:border-blue-500" href="#">Log in</a></p>
-        <p><a className="hover:text-blue-500" href="#">Forget your user ID or password?</a></p>
-      </div>
 
-      <div className="bg-white w-[450px] flex flex-col items-center rounded-lg mt-5 relative shadow-lg">
-        {/* Sử dụng Image component thay cho thẻ img */}
-        <Image 
-  className="absolute top-[-5px] left-[-17px] filter brightness-[-180%] z-10" 
-  src="/pictures/logo-removebg-preview.png" 
-  alt="Logo" 
-  width={96} 
-  height={96} 
-/>
-        <button className="absolute right-2 top-2 text-gray-400 font-bold text-lg">X</button>
-        <div className="bg-white w-[400px] flex flex-col items-center justify-center rounded-lg border border-black mt-9 mb-4 p-6 relative">
-          <div className="text-2xl mb-5">Create an account</div>
-          <div className="w-full mb-8">
-            <label className="text-xs text-gray-500 mb-1 block">Username</label>
-            <input className="w-full p-2 rounded-lg border border-gray-300" type="text" />
+
+const Register = () => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [errorMessage, setErrMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [isAgreePrivacyPolicy, setIsAgreePrivacyPolicy] = useState(false)
+  const router = useRouter()
+
+  const {
+    validateUsername,
+    validatePassword,
+    usernameErrors,
+    passwordErrors,
+    usernameTouched,
+    passwordTouched,
+  } = useValidation()
+
+  const redirectToLogin = () => {
+    const timeoutId = setTimeout(() => {
+      router.push('/login')
+    },1000)
+
+     return () => clearTimeout(timeoutId);
+  }
+
+  const handleSignUp = async(e: React.FormEvent) => {
+    e.preventDefault()
+    setErrMessage('') //clear message if user check again
+    if(!isAgreePrivacyPolicy){
+      setErrMessage('Please agree to the Terms of use and Privacy Policy.')
+      return;
+    }
+
+    if(password != confirmPassword){
+      setErrMessage("Password don't match")
+      return;
+    }
+
+    if(!validateUsername(username) || !validatePassword(password)){
+      setErrMessage("Username or password is invalid")
+      return;
+    }
+
+    // Prepare the form data using URLSearchParams for x-www-form-urlencoded
+    const formData = new URLSearchParams();
+    formData.append('username', username.trim());
+    formData.append('password', password.trim());
+    try {
+      // Call your API to register the user
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign-up`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+      });
+
+      const data = await response.json();
+
+      if (data.code == 'REG01') {
+        // Handle success response
+        setSuccessMessage(data.message);
+        setErrMessage(''); // Clear any error messages
+        redirectToLogin()
+      } else {
+        // Handle error response
+        setErrMessage(data.message);
+        setSuccessMessage('');
+      }
+    } catch (error) {
+      console.log(error);
+      
+      setErrMessage('Network error. Please try again later.');
+      setSuccessMessage('');
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#c1d5d3] p-8">
+      <div className="bg-white w-full max-w-lg mx-auto p-8 rounded-lg shadow-lg relative">
+        <button className="absolute top-4 right-4 text-gray-600 font-bold">
+          X
+        </button>
+        <div className="flex justify-center items-center mb-5">
+          <div className="relative w-12 h-12 mr-2 brightness-[-150%]">
+            <Image
+              src="/pictures/safetravel.png" // Assuming logo.webp is in the public folder
+              alt="logo"
+              fill
+            />
           </div>
-          <div className="w-full mb-8">
-            <label className="text-xs text-gray-500 mb-1 block">Password</label>
-            <input className="w-full p-2 rounded-lg border border-gray-300" type="password" />
-          </div>
-          <div className="w-full mb-8">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Enter password again</span>
-              <span>Hide</span>
-            </div>
-            <input className="w-full p-2 rounded-lg border border-gray-300" type="password" />
-          </div>
-          <div className="flex justify-between text-gray-500 text-[10px] space-x-10 mb-5">
-            <div>
-              <p>&bull; Use 6-255 characters</p>
-              <p>&bull; Use upper case letters (e.g. Aa)</p>
-            </div>
-            <div>
-              <p>&bull; Use a number (e.g 1234)</p>
-              <p>&bull; Use a symbol (e.g !@#$)</p>
-            </div>
-          </div>
-          <button className="px-20 py-2 rounded-full bg-black text-white">Sign in</button>
-          <div className="flex items-center mt-3">
-            <div className="text-xs">
-              By creating an account, you agree to the <span className="underline">Terms of use</span> and <span className="underline">Privacy Policy</span>
-            </div>
-            <input className="ml-2" type="checkbox" />
-          </div>
+          <h1 className="text-2xl font-semibold">Create an account</h1>
         </div>
+        <form className="space-y-6" onSubmit={handleSignUp}>
+          <div>
+            <label className="block text-sm text-gray-600">Username</label>
+            <input
+              type="text"
+              onChange={(e) => {
+                setUsername(e.target.value)
+                validateUsername(e.target.value)
+              }}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-600 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">Password</label>
+            <input
+              type={passwordVisible ? 'text' : 'password'}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                validatePassword(e.target.value)
+              }}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-600 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="flex justify-between text-sm text-gray-600">
+              <span>Enter password again</span>
+              <span
+                className="cursor-pointer text-gray-500"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+              >
+                {passwordVisible ? 'Hide' : 'Show'}
+              </span>
+            </label>
+            <input
+              type={passwordVisible ? 'text' : 'password'}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value)
+              }}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-gray-600 focus:outline-none"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-20 text-xs text-gray-600">
+            <div>
+              <p className={`
+                ${!usernameTouched || !passwordTouched ? 'text-gray-600' : usernameErrors.length || passwordErrors.length ? 'text-red-600' : 'text-green-600'}`
+              }>&bull; Use 6-255 characters</p>
+              <p className={`${!passwordTouched ? 'text-gray-600' : passwordErrors.uppercase ? 'text-red-600' : 'text-green-600'}`}>&bull; Use upper case letters (e.g. Aa)</p>
+            </div>
+            <div>
+              <p className={`${!passwordTouched ? 'text-gray-600' : passwordErrors.number ? 'text-red-600' : 'text-green-600'}`}>&bull; Use a number (e.g 1234)</p>
+              <p className={`${!passwordTouched ? 'text-gray-600' : passwordErrors.symbol ? 'text-red-600' : 'text-green-600'}`}>&bull; Use a symbol (e.g !@#$)</p>
+            </div>
+          </div>
+           {/* Display error message */}
+          {errorMessage && (
+            <div className="text-red-600 text-sm flex justify-center">
+              {errorMessage}
+            </div>
+          )}
+          
+          {/* Display success message */}
+          {successMessage && (
+            <div className="text-green-600 text-sm flex justify-center">
+              {successMessage}
+            </div>
+          )}
+          <div>
+            <button className="w-full py-3 text-white bg-black rounded-md hover:bg-gray-800 transition-colors">
+              Sign in
+            </button>
+          </div>
+          <div className="flex items-center text-xs text-gray-600 mt-2">
+            <input type="checkbox" onChange={() => {
+                if(isAgreePrivacyPolicy){
+                  setIsAgreePrivacyPolicy(false)
+                }else{
+                  setIsAgreePrivacyPolicy(true)
+                }
+            }} className="mr-2" />
+            <p>
+              By creating an account, you agree to the{' '}
+              <span className="underline cursor-pointer">Terms of use</span> and{' '}
+              <span className="underline cursor-pointer">Privacy Policy</span>.
+            </p>
+          </div>
+          <div className="text-center text-sm mt-4">
+            <p>
+              Already have an account?{' '}
+              <a href="/login" className="underline text-black hover:text-gray-700">
+                Log in
+              </a>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );
-}
+};
+
+export default Register;
+
+
