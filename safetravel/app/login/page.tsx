@@ -1,6 +1,63 @@
-// pages/login.js
+"use client"
 import Image from 'next/image'
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react'
+import { AuthContext } from '../contexts/AuthProvider';
+
+
 export default function Login() {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [errMessage, setErrMessage] = useState('')
+  const router = useRouter()
+  const authContext = useContext(AuthContext)
+
+  useEffect(() => {
+    console.log(authContext?.authenticated);
+    
+    if(authContext?.authenticated){
+      router.push('/')
+    }
+  })
+
+  if(authContext?.authenticated){
+    return null
+  }
+
+  const handleLogin = async () => {
+    const formData = new URLSearchParams();
+    formData.append('username', username.trim());
+    formData.append('password', password.trim());
+   
+    try {
+      // Call your API to login here
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+      });
+
+      const data = await response.json();
+
+      if (data.code == 'LOG01') {
+        authContext?.setAuth(true)
+        setErrMessage(''); // Clear any error messages
+        router.push('/') //redirect to home page
+        
+      } else{
+        // Handle error response
+        setErrMessage(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      setErrMessage('Network error. Please try again later.');
+    }
+  }
+
     return (
       <div className="min-h-screen bg-[#5fb6aa40] flex items-center justify-center">
         <div className="bg-white w-[450px] flex flex-col items-center rounded-lg relative p-6">
@@ -36,29 +93,38 @@ export default function Login() {
           </div>
   
           <div className="w-full">
-            <label className="block text-gray-500 text-xs mb-1">Your email</label>
+            <label className="block text-gray-500 text-xs mb-1">Username</label>
             <input
               type="text"
-              className="w-full border border-gray-300 rounded px-4 py-2 mb-3"
+              onChange={(e) => {
+                setUsername(e.target.value)
+              }}
+              className="w-full border border-gray-300 rounded-xl px-4 py-2 mb-3"
             />
           </div>
   
           <div className="w-full">
-            <div className="flex justify-between text-gray-500 text-xs mb-1">
+            <div className="flex justify-between text-gray-500  text-xs mb-1">
               <span>Your password</span>
-              <span className="cursor-pointer">Hide</span>
+              <span className="cursor-pointer" onClick={() => {
+                setPasswordVisible(!passwordVisible)
+              }}>{passwordVisible ? 'Hide' : 'Show'}</span>
             </div>
             <input
-              type="password"
-              className="w-full border border-gray-300 rounded px-4 py-2 mb-3"
+              type={passwordVisible ? 'text' : 'password'}
+              onChange={(e) => {
+                setPassword(e.target.value)
+              }}
+              className="w-full border border-gray-300 rounded-xl px-4 py-2 mb-3"
             />
           </div>
   
-          <div className="w-full text-right text-xs text-gray-500 mb-4 cursor-pointer">
+          <div className="w-full text-right text-xs hover:underline text-gray-500 mb-4 cursor-pointer">
             Forget your password
           </div>
   
-          <button className="w-full bg-gray-600 text-white rounded-xl py-3">Login</button>
+          <button className="w-full bg-gray-600 text-white rounded-xl py-3 hover:bg-gray-800" onClick={handleLogin}>Login</button>
+          <div className='flex justify-center items-center text-red-600'>{errMessage}</div>
         </div>
       </div>
     );

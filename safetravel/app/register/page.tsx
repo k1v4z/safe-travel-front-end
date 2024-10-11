@@ -4,8 +4,6 @@ import Image from 'next/image';
 import useValidation from '../hooks/useValidation';
 import { useRouter } from 'next/navigation';
 
-
-
 const Register = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [username, setUsername] = useState('')
@@ -190,7 +188,7 @@ const Register = () => {
             <p>
               Already have an account?{' '}
               <a href="/login" className="underline text-black hover:text-gray-700">
-                Log in
+                Signup
               </a>
             </p>
           </div>
