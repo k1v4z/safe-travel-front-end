@@ -25,3 +25,40 @@ body {
     text-wrap: balance;
   }
 }
+
+@font-face{
+  font-family: 'Romana BT';
+  src: url('/fonts/ROMANAB.TTF') format(truetype);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face{
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Regular.ttf') format(truetype);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face{
+  font-family: 'Maname';
+  src: url('/fonts/Maname-Regular.ttf') format(truetype);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face{
+  font-family: 'Inter';
+  src: url('/fonts/Inter_18pt-Thin.ttf') format(truetype);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face{
+  font-family: 'GideonRoman';
+  src: url('/fonts/GideonRoman-Regular.ttf') format(truetype);
+  font-weight: normal;
+  font-style: normal;
+}
+
+
