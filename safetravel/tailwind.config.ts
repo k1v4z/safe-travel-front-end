@@ -12,6 +12,13 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        romana: ['"Romana BT"', 'serif'],
+        poppins: ['"Poppins"', 'serif'],
+        maname: ['"Maname"', 'serif'],
+        inter: ['"Inter"', 'serif'],
+        gideonroman: ['"GideonRoman"', 'serif']
+      }
     },
   },
   plugins: [],
