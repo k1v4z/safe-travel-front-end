@@ -1,6 +1,7 @@
 import React from "react";
 
 const MainSection = () => {
+
   return (
     <div className="relative z-0">
       <img

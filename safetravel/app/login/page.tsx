@@ -42,9 +42,11 @@ export default function Login() {
       });
 
       const data = await response.json();
-
+      const username = data.payload.username
+      
       if (data.code == 'LOG01') {
         authContext?.setAuth(true)
+        localStorage.setItem('username', username)
         setErrMessage(''); // Clear any error messages
         router.push('/') //redirect to home page
         

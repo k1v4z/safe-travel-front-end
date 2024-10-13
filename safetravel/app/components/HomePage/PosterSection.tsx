@@ -6,8 +6,8 @@ const PosterSection = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mx-4 md:mx-20 ">
        {
-        postAttribute.map((post) => {
-            return <PosterItem title={post.title} background={post.background} content={post.content} buttonText={post.buttonText} buttonImg={post.buttonIcon}/>
+        postAttribute.map((post, index) => {
+            return <PosterItem key={index} title={post.title} background={post.background} content={post.content} buttonText={post.buttonText} buttonImg={post.buttonIcon}/>
         })
        }
     </div>

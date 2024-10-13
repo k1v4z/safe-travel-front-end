@@ -1,5 +1,5 @@
 "use client"
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import React, { createContext, ReactNode, useEffect, useState } from 'react'
 
 interface AuthContextType {
     authenticated: boolean,
@@ -40,7 +40,7 @@ export default function AuthProvider({children}: AuthProviderProps){
     }, [])
 
   return (
-    <AuthContext.Provider value={{authenticated, setAuth}}>
+    <AuthContext.Provider value={{authenticated,setAuth}}>
         {children}
     </AuthContext.Provider>
   )

@@ -1,11 +1,16 @@
 "use client"
 import Image from 'next/image';
 import Link from 'next/link'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { AuthContext } from '../contexts/AuthProvider';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const authContext = useContext(AuthContext);
+  let username = ''
+  if (typeof window !== "undefined") {
+    username = localStorage.getItem('username') || ""
+  }
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   }
@@ -31,11 +36,18 @@ export default function Header() {
             <Link href="/forum" legacyBehavior={true}>
               <a className="hover:border-b-2 border-[#b12b2b] font-bold font-poppins">Forum</a>
             </Link>
+            <Link href="/forum" legacyBehavior={true}>
+              <a className="hover:border-b-2 border-[#b12b2b] font-bold font-poppins">Weather</a>
+            </Link>
           </div>
 
           {/* Right side of the header */}
           <div className="hidden md:flex items-center space-x-2">
-            <div className='font-poppins font-bold'>Account</div>
+            <div className='font-poppins font-bold'>
+              {
+                authContext?.authenticated ? `Hi ${username}` : "My Account"
+              }
+            </div>
             <div className="flex items-center space-x-4">
               <i className="fa fa-phone text-black text-lg"></i>
               <div className='font-poppins font-bold flex'>
