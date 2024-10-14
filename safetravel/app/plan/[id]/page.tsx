@@ -1,15 +1,17 @@
 "use client"
-import Header from "../../components/Header"
+import Header from "../../components/Header/Header"
 import Footer from "../../components/Footer"
 import PlanTimeline from "../../components/Plan/PlanTimeline"
 import dynamic from "next/dynamic";
+import useAuth from "@/app/hooks/useAuth";
 
 const HereMap = dynamic(() => import('@/app/components/HereMap'), {
   ssr: false, // Disable ssr for HereMap component
 });
 
+const Plan = () => {  
+  useAuth()
 
-const HomePage = () => {
   return (
     <div className="bg-[#D2FBFD] min-h-screen">
       <Header />
@@ -27,4 +29,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Plan;

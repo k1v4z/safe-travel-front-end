@@ -17,7 +17,8 @@ const config: Config = {
         poppins: ['"Poppins"', 'serif'],
         maname: ['"Maname"', 'serif'],
         inter: ['"Inter"', 'serif'],
-        gideonroman: ['"GideonRoman"', 'serif']
+        gideonroman: ['"GideonRoman"', 'serif'],
+        roboto_light: ['"Roboto-Light"', 'serif']
       }
     },
   },

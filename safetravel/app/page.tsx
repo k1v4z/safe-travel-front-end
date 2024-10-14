@@ -1,4 +1,4 @@
-import Header from '../app/components/Header'
+import Header from './components/Header/Header'
 import Footer from '../app/components/Footer'
 import FunctionSection from './components/HomePage/FunctionSection'
 import PosterSection from './components/HomePage/PosterSection'

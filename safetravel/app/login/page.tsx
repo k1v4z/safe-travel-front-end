@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../contexts/AuthProvider';
 
-
 export default function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [username, setUsername] = useState('')
@@ -13,11 +12,9 @@ export default function Login() {
   const router = useRouter()
   const authContext = useContext(AuthContext)
 
-  useEffect(() => {
-    console.log(authContext?.authenticated);
-    
+  useEffect(() => {  
     if(authContext?.authenticated){
-      router.push('/')
+      router.push('/')  
     }
   })
 
