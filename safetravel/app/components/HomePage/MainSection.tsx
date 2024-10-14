@@ -19,11 +19,16 @@ const MainSection = () => {
             destinations of your choice for vacations.
           </p>
         </div>
-        <div className="flex justify-center items-center mt-10 md:mt-0">
+        <div className="relative flex justify-center items-center mt-10 md:mt-0">
           <img
             src="/pictures/boat-removebg-preview.png"
             alt="Boat"
-            className="w-64 md:w-[500px]"
+            className="absolute w-64 md:w-[500px] z-20"
+          />
+          <img
+            src="/pictures/Mask.png"
+            alt="Mask"
+            className="w-64 md:w-[500px] z-10"
           />
         </div>
       </div>
