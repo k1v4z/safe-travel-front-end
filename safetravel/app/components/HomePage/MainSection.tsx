@@ -1,8 +1,21 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 
 const MainSection = () => {
+  const [animateBoat, setAnimateBoat] = useState(false);
 
-  return (
+  useEffect(() => {
+    // Trigger the animation after a short delay to ensure smooth entry
+    const timer = setTimeout(() => {
+      setAnimateBoat(true);
+    }, 10);
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, []);
+
+  return ( 
     <div className="relative z-0">
       <img
         src="/pictures/map.png"
@@ -23,7 +36,9 @@ const MainSection = () => {
           <img
             src="/pictures/boat-removebg-preview.png"
             alt="Boat"
-            className="absolute w-64 md:w-[500px] z-20"
+            className={`absolute w-64 md:w-[500px] z-20 transition-transform duration-1000 ${
+              animateBoat ? "animate-boatMove" : "opacity-0"
+            }`}
           />
           <img
             src="/pictures/Mask.png"
