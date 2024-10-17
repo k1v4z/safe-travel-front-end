@@ -17,7 +17,9 @@ const Weather = () => {
       <WeatherContainer/>
 
       {/* Map and Footer */}
-      <HereMap />
+
+      {/* Hard code temporarily */}
+      <HereMap latitude={15.932077} longitude={108.193575}/> 
       <Footer />
     </div>
   );
