@@ -14,7 +14,7 @@ const WeatherContainer = () => {
 
         {/* Daily Forecast Section */}
         <DailyForecast/>
-      </div>
+    </div>
   )
 }
 
