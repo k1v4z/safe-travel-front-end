@@ -12,6 +12,16 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        boatMove: {
+          '0%': { transform: 'translate(100%, 100%)', opacity: '0' },
+          '30%': { opacity: '1' },
+          '100%': { transform: 'translate(0, 0)' },
+        },
+      },
+      animation: {
+        boatMove: 'boatMove 2s ease-in-out forwards',
+      },
       fontFamily: {
         romana: ['"Romana BT"', 'serif'],
         poppins: ['"Poppins"', 'serif'],
