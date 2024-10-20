@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import React, { useEffect } from "react";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -21,7 +21,8 @@ interface IMapProps{
 const HereMap = ({latitude, longitude}: IMapProps) => {
   useEffect(() => {
     // Ensure that Leaflet only run in client
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") 
+      return;
   }, []);
   
 
