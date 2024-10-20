@@ -1,8 +1,9 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Image from 'next/image';
 import useValidation from '../hooks/useValidation';
 import { useRouter } from 'next/navigation';
+import { AuthContext } from '../contexts/AuthProvider';
 
 const Register = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -13,6 +14,7 @@ const Register = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [isAgreePrivacyPolicy, setIsAgreePrivacyPolicy] = useState(false)
   const router = useRouter()
+  const authContext = useContext(AuthContext)
 
   const {
     validateUsername,
@@ -29,6 +31,11 @@ const Register = () => {
     },1000)
 
      return () => clearTimeout(timeoutId);
+  }
+
+  if(authContext?.authenticated){
+    router.push('/')
+    return;
   }
 
   const handleSignUp = async(e: React.FormEvent) => {
