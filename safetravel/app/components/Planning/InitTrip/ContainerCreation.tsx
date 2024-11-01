@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HeaderCreation from "./HeaderCreation";
 import TripInput from "./TripInput";
 import Destination from "./Destination";
+import usePlanStore from "@/app/stores/planStore";
 
 interface ContainerCreationProps {
   isNext: boolean,
@@ -9,6 +10,14 @@ interface ContainerCreationProps {
 }
 
 const ContainerCreation = (props: ContainerCreationProps) => {
+  const { plan, setPlan } = usePlanStore();
+  const [isFormValid, setIsFormValid] = useState(false);
+  
+  useEffect(() => {
+    setIsFormValid(plan.title.trim() !== "" && plan.province_name.trim() !== "");
+  }, [plan.title, plan.province_name]);
+
+  
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="w-full max-w-lg">
@@ -18,7 +27,7 @@ const ContainerCreation = (props: ContainerCreationProps) => {
           <Destination/>
         </div>
         <div className="w-full max-w-lg flex justify-end">
-            <button onClick={() => props.setNext(!props.isNext)} className="py-2 px-10 bg-[#26DAD1] text-white font-roboto_light rounded-xl font-bold hover:bg-teal-600">
+            <button disabled={!isFormValid} onClick={() => props.setNext(true)} className="py-2 px-10 bg-[#26DAD1] text-white font-roboto_light rounded-xl font-bold hover:bg-teal-600">
               Next
             </button>
         </div>

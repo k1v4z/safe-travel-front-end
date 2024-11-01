@@ -1,8 +1,28 @@
 import React from 'react';
 import DateRangeSelector from './DateRangeSelector';
 import ButtonGroup from './ButtonGroup';
+import usePlanStore from '@/app/stores/planStore';
 
-const DayChosen: React.FC = () => {
+interface DayChosenProps {
+  onBack: () => void;
+  onNext: () => void;
+}
+
+const DayChosen = ({onBack, onNext}: DayChosenProps) => {
+  const { plan } = usePlanStore();
+  
+  const handleNext = () => {
+    const selectedDate = new Date(plan.date);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Set the current date to midnight for comparison
+
+    if (!plan.date || selectedDate < currentDate) {
+      alert('Please choose a valid date that is not in the past.');
+      return;
+    }
+    onNext();
+  };
+
   return (
     <div>
       <div className="relative">
@@ -15,7 +35,7 @@ const DayChosen: React.FC = () => {
         <p className="font-gideonroman text-lg">Choose a date range, up to 7 days.</p>
         <DateRangeSelector />
         <p className="text-black font-gideonroman underline text-lg font-bold"><a href="#">I don't know my dates yet</a></p>
-        <ButtonGroup />
+        <ButtonGroup onBack={onBack} onNext={handleNext} />
       </div>
     </div>
   );

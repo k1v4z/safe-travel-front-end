@@ -1,8 +1,11 @@
+import usePlanStore from '@/app/stores/planStore';
 import React, { useState, useEffect } from 'react';
 
-const Calendar: React.FC = () => {
+const Calendar = () => {
+  const {plan, setPlan} = usePlanStore()
   const [currentDate, setCurrentDate] = useState(new Date());
   const [daysInMonth, setDaysInMonth] = useState<number[]>([]);
+  const [dayClicked, setDayClicked] = useState<number | null>(null);
 
   useEffect(() => {
     const year = currentDate.getFullYear();
@@ -20,21 +23,41 @@ const Calendar: React.FC = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const handleDayClick = (day: number) => {
+    const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day + 1);
+    const vietnamDate = new Date(selectedDate.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+    setDayClicked(day);
+    setPlan({...plan, date: vietnamDate.toISOString()});
+  }
 
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  console.log(plan);
+  
   return (
-    <div className="w-full text-center font-bold">
+    <div className="w-full text-center">
       <div className="flex justify-between items-center mb-5">
-        <span>{monthNames[currentDate.getMonth()]} <span>{currentDate.getFullYear()}</span></span>
+        <span className='font-bold'>{monthNames[currentDate.getMonth()]} <span>{currentDate.getFullYear()}</span></span>
         <div className="flex space-x-2">
           <span className="cursor-pointer" onClick={handlePrevMonth}>&#10094;</span>
           <span className="cursor-pointer" onClick={handleNextMonth}>&#10095;</span>
         </div>
       </div>
       <div className="grid grid-cols-7 gap-2">
-        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        {
+          weekdays.map(weekday => (
+            <div className='font-bold' key={weekday}>{weekday}</div>
+          ))
+        }
         {daysInMonth.map(day => (
-          <div className='cursor-pointer' key={day}>{day}</div>
+          <div
+            className={`cursor-pointer font-poppins ${dayClicked === day ? 'bg-blue-500 text-white rounded-xl' : ''}`}
+            key={day}
+            onClick={() => handleDayClick(day)}
+          >
+            {day}
+          </div>
         ))}
       </div>
     </div>

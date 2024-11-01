@@ -9,7 +9,6 @@ const Destination = () => {
   const handleDestinationClick = (provinceName: string) => {
     setDestination(provinceName);
     setPlan({ ...plan, province_name: provinceName }); 
-    console.log(plan);
   }
 
   return (
