@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 
-const FilterBtn = () => {
+interface FilterBtnProps {
+  activeType: string;
+  setActiveType: (type: string) => void;
+}
+
+const FilterBtn = ({ activeType, setActiveType }: FilterBtnProps) => {
+ 
+  const handleButtonClick = (buttonName: string) => {
+    setActiveType(buttonName);
+  };
+  
   return (
     <div className="flex space-x-5 my-5">
-      <button className="flex items-center font-poppins font-bold text-xs  bg-white shadow-lg px-4 py-2 rounded-full hover:bg-[#ea75a9]">
+      <button 
+        onClick={() => handleButtonClick("thingsToDo")}
+        className={`flex items-center font-poppins font-bold text-xs px-4 py-2 rounded-full shadow-lg hover:bg-[#ea75a9] ${
+          activeType === "thingsToDo" ? "bg-[#ea75a9]" : "bg-white"
+        }`}>
         <Image
           src="/pictures/smile-icon.png"
           alt="icon"
@@ -14,7 +28,11 @@ const FilterBtn = () => {
         />
         Things to do
       </button>
-      <button className="flex font-poppins font-bold text-xs items-center bg-white shadow-lg px-4 py-2 rounded-full hover:bg-[#798bed]">
+      <button
+        onClick={() => handleButtonClick("Food")} 
+        className={`
+          flex font-poppins font-bold text-xs items-center ${activeType === "Food" ? 'bg-[#798bed]' : 'bg-white'} bg-white shadow-lg px-4 py-2 rounded-full hover:bg-[#798bed]
+        `}>
         <Image
           src="/pictures/food-icon.png"
           alt="icon"
@@ -24,7 +42,9 @@ const FilterBtn = () => {
         />
         Food & Drink
       </button>
-      <button className="flex items-center font-poppins font-bold text-xs bg-white shadow-lg px-4 py-2 rounded-full hover:bg-[#75eab2]">
+      <button 
+        onClick={() => handleButtonClick("Accomodation")}
+        className={`flex items-center ${activeType === "Accomodation" ? 'bg-[#75eab2]' : 'bg-white'} font-poppins font-bold text-xs  shadow-lg px-4 py-2 rounded-full hover:bg-[#75eab2]`}>
         <Image
           src="/pictures/stay-icon.png"
           alt="icon"
