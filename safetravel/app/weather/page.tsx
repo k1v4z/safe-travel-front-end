@@ -44,6 +44,7 @@ const Weather = () => {
   useEffect(() => {
     const fetchWeather = async() => {
       try{
+        //Optimize later with Promise.all
         const responseWeather = await fetch(`http://${process.env.NEXT_PUBLIC_SERVER}/weather?lat=${location.lat}&lng=${location.lng}&type=weather&domain=api.openweathermap.org`)
         const responseAirQuality = await fetch(`http://${process.env.NEXT_PUBLIC_SERVER}/weather?lat=${location.lat}&lng=${location.lng}&type=air_pollution&domain=api.openweathermap.org`)
         const responseHourlyForecast = await fetch(`http://${process.env.NEXT_PUBLIC_SERVER}/weather?lat=${location.lat}&lng=${location.lng}&type=forecast/hourly&domain=pro.openweathermap.org`)

@@ -6,6 +6,7 @@ import ContainerCreation from "../components/Planning/InitTrip/ContainerCreation
 import MainContent from "../components/Planning/MakeTrip/MainContent";
 import DayChosen from "../components/DayChosen/DayChosen";
 import useAuth from "../hooks/useAuth";
+import KindChosen from "../components/KindChosen/KindChosen";
 
 const CreateTrip = () => {
   useAuth()
@@ -23,7 +24,8 @@ const CreateTrip = () => {
       <Header />
         {step === 0 && <ContainerCreation isNext={step > 0} setNext={(isNext) => setStep(isNext ? 1 : 0)} />}
         {step === 1 && <DayChosen onBack={handleBack} onNext={handleNext} />}
-        {step === 2 && <MainContent />}
+        {step === 2 && <KindChosen onBack={handleBack} onNext={handleNext} />}
+        {step === 3 && <MainContent />}
       <Footer />
     </div>
   );
