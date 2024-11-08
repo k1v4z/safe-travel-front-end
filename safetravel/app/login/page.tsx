@@ -39,11 +39,15 @@ export default function Login() {
       });
 
       const data = await response.json();
-      const username = data.payload.username
+      console.log(data);
+      
+      const username = data?.payload?.username
+      const userId = data?.payload?.userId
       
       if (data.code == 'LOG01') {
         authContext?.setAuth(true)
         localStorage.setItem('username', username)
+        localStorage.setItem('userId', userId)
         setErrMessage(''); // Clear any error messages
         router.push('/') //redirect to home page
         

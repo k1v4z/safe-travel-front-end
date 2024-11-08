@@ -13,7 +13,7 @@ const ActivityItem = ({activity, isEdit, updateMapLocation}: IActivityProps) => 
   
   return (
     <div
-      className="w-[75%] bg-white  ml-16 timeline-item flex py-4 px-6 mb-6 border border-[#c6c3c3] rounded-[20px] shadow-sm relative cursor-pointer"
+      className="w-[85%] bg-white  ml-16 timeline-item flex py-4 px-6 mb-6 border border-[#c6c3c3] rounded-[20px] shadow-sm relative cursor-pointer"
     >
       {/* Circular marker */}
       <div className="absolute left-[-58px] top-1/2 transform -translate-y-1/2 bg-[#d9d9d9] w-[30px] h-[30px] rounded-full"></div>
@@ -51,9 +51,6 @@ const ActivityItem = ({activity, isEdit, updateMapLocation}: IActivityProps) => 
           Open at: {activity.activity_location.open_at} &#x2022; Close at: {activity.activity_location.close_at}
         </p>
       </div>
-      {
-        isEdit && <img className=" absolute w-[10%] h-[20%]  right-[-58px] top-14" src="/pictures/move-icon.png" alt="" />
-      }
     </div>
   );
 };

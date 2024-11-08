@@ -12,11 +12,17 @@ interface KindChosenProps {
 const SelfMade1 = ({onBack, onNext}: KindChosenProps) => {
   const { plan, setPlan } = usePlanStore();
   const [selectedKind, setSelectedKind] = useState(plan.kind_name || "");
+  const [haveChild, setHaveChild] = useState(false);
 
   const handleKindClick = (kindName: string) => {
     setSelectedKind(kindName);
     setPlan({ ...plan, kind_name: kindName });
   };
+
+  const handleHaveChildClick = (value: boolean) => {
+    setHaveChild(value);
+    setPlan({ ...plan, have_children: value });
+  }
 
   const handleNext = () => {
     if (!selectedKind) {
@@ -67,10 +73,10 @@ const SelfMade1 = ({onBack, onNext}: KindChosenProps) => {
 
       <p className="text-xl mb-8">Are you traveling with children?</p>
       <div className="flex gap-5 mb-10">
-        <button className="px-10 py-2 rounded-full bg-[#1CD8D2] text-white font-bold hover:bg-[#18A8A5] transition-colors duration-300">
+        <button onClick={() => {handleHaveChildClick(true)}} className={`px-10 py-2 rounded-full ${haveChild ? 'bg-[#1CD8D2] text-white' : 'bg-gray-300 text-black'} font-bold hover:bg-[#18A8A5] transition-colors duration-300`}>
           Yes
         </button>
-        <button className="px-10 py-2 rounded-full bg-gray-300 text-black font-bold hover:bg-[#1CD8D2] hover:text-white transition-colors duration-300">
+        <button onClick={() => {handleHaveChildClick(false)}} className={`px-10 py-2 rounded-full ${!haveChild ? 'bg-[#1CD8D2] text-white' : 'bg-gray-300 text-black'} font-bold hover:bg-[#1CD8D2] hover:text-white transition-colors duration-300`}>
           No
         </button>
       </div>

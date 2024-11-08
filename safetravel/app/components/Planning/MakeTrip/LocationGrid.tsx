@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import usePlanStore from "@/app/stores/planStore";
+import DayPopup from "../../Popup/DayPopup";
 
 interface LocationGridProps {
   page: number;
@@ -11,8 +12,52 @@ interface LocationGridProps {
 
 const LocationGrid = ({page, limit, setTotalPages, activeType}: LocationGridProps) => {
   const [cardData, setCardData] = useState([] as any[]);
-  
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const {plan, setPlan} = usePlanStore();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const handleFavoriteClick = (item: any) => {
+    setSelectedItem(item);
+    setShowPopup(!showPopup);
+  };
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    setUserId(storedUserId);
+    setPlan({ ...plan, user_id: storedUserId || '' });
+  }, []);
+
+  const handleAddToPlanStore = (startDate: Date, endDate: Date) => {
+    if (selectedItem) {
+      const newActivity = {
+        activity_location_id: selectedItem.id,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+      };
+      
+      const existingActivityIndex = plan.activities.findIndex(
+        (activity) => activity.activity_location_id === selectedItem.id
+      );
+
+      if (existingActivityIndex !== -1) {
+        // Update existing activity
+        const updatedActivities = [...plan.activities];
+        updatedActivities[existingActivityIndex] = newActivity;
+        setPlan({ ...plan, activities: updatedActivities });
+      } else {
+        // Add new activity
+        setPlan({ ...plan, activities: [...plan.activities, newActivity] });
+      }
+
+      handleClosePopup();
+    }
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSelectedItem(null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,6 +73,9 @@ const LocationGrid = ({page, limit, setTotalPages, activeType}: LocationGridProp
 
     fetchData();
   }, [page, limit, plan.province_name, activeType]);
+
+  console.log(plan);
+  
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -62,12 +110,14 @@ const LocationGrid = ({page, limit, setTotalPages, activeType}: LocationGridProp
           <div className="absolute top-3 right-3 bg-gray-300 p-2 rounded-full">
             <Image
               src="/pictures/favorite-icon.png"
+              onClick={() => handleFavoriteClick(item)}
               alt="save icon"
               className="cursor-pointer hover:scale-110"
               width={16}
               height={16}
             />
           </div>
+          {showPopup && <DayPopup onClose={handleClosePopup} onAddToPlanStore={handleAddToPlanStore} />}
         </div>
       ))}
     </div>
