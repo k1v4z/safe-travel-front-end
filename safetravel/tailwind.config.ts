@@ -28,7 +28,8 @@ const config: Config = {
         maname: ['"Maname"', 'serif'],
         inter: ['"Inter"', 'serif'],
         gideonroman: ['"GideonRoman"', 'serif'],
-        roboto_light: ['"Roboto-Light"', 'serif']
+        roboto_light: ['"Roboto-Light"', 'serif'],
+        roboto: ['Roboto', 'sans-serif']
       }
     },
   },

@@ -51,7 +51,10 @@ export default function Login() {
         setErrMessage(''); // Clear any error messages
         router.push('/') //redirect to home page
         
-      } else{
+      } else if(data.code == 'LOG03'){
+        console.log('admin')
+      } 
+      else{
         // Handle error response
         setErrMessage(data.message);
       }
