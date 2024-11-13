@@ -196,7 +196,7 @@ const TripLocation: React.FC<{
                 </tbody>
             </table>
             <div className="flex justify-center mt-4">
-                <button className="pagination-button" onClick={() => activePage > 1 && setActivePage(activePage - 1)}>
+                <button className="pagination-button " onClick={() => activePage > 1 && setActivePage(activePage - 1)}>
                     &lt;
                 </button>
                 {[1, 2, 3, 4].map((page) => (

@@ -49,7 +49,6 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
             const result = await response.json();
             if (response.ok) {
                 console.log('Location added successfully:', result);
-                // Optionally, you can call a function to refresh the list of locations after adding
             } else {
                 console.log('Error:', result);
             }
@@ -65,7 +64,6 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                 <span className="close" onClick={handleClose}>&times;</span>
                 <h2>Add Location</h2>
                 <form onSubmit={handleSubmit}>
-                    {/* Form fields for Location Name, Type, Open At, Close At, Address */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
                             Location Name

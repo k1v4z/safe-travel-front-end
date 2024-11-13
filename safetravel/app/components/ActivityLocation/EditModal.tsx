@@ -57,7 +57,6 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                 <span className="close" onClick={handleClose}>&times;</span>
                 <h3>Edit Location</h3>
                 <form onSubmit={handleSubmit}>
-                    {/* Form fields for Location Name, Type, Open At, Close At, Address */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Location Name</label>
                         <input

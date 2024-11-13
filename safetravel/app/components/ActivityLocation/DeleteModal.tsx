@@ -28,7 +28,6 @@ const DeleteModal: React.FC<ModalProps> = ({ item, setDeleteItem }) => {
             if (response.ok) {
                 console.log('Location deleted successfully');
                 setDeleteItem && setDeleteItem(null);
-                // Optionally, you can call a function to refresh the list of locations after deletion
             } else {
                 const result = await response.json();
                 console.log('Error:', result);
