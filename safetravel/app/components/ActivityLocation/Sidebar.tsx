@@ -11,7 +11,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeMenu, setActiveMenu }) => (
             <p className="text-[#326D7B] font-bold mb-4">Menu</p>
             <ul>
                 {['Dashboard', 'Trip Location', 'Post', 'User', 'Setting'].map((item) => (
-                    <li key={item} className={`mb-4 menu-item font-roboto font-semibold ${activeMenu === item ? 'active' : ''}`} onClick={() => setActiveMenu(item)}>
+                    <li
+                        key={item}
+                        className={`mb-4 menu-item font-roboto font-semibold pl-4 rounded-md ${activeMenu === item ? 'text-[#326D7B] font-bold' : 'text-[#81949D]'
+                            }`}
+                        onClick={() => setActiveMenu(item)}
+                    >
                         <a href="#" className="flex items-center">
                             {/* <i className={`fas fa-${item === 'Dashboard' ? 'tachometer-alt' : item === 'Trip Location' ? 'map-marker-alt' : item === 'Post' ? 'edit' : item === 'User' ? 'user' : 'cog'} mr-2`}></i> {item} */}
                             <i
@@ -42,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeMenu, setActiveMenu }) => (
                 <p className="text-gray-500 text-sm">Account Settings</p>
             </div>
         </div>
-    </aside>
+    </aside >
 );
 
 export default Sidebar;

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import "../components/ActivityLocation/Location.css";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import Header from "../components/ActivityLocation/Header";
 import Sidebar from "../components/ActivityLocation/Sidebar";
 import AddLocationModal from "../components/ActivityLocation/AddLocationModal";
@@ -28,20 +28,20 @@ const Trip: React.FC = () => {
         };
         fetchData();
     }, [activePage]);
-    
+
     const fetchLocations = async () => {
         setLoading(true);
         setError(null);
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/activity-locations?page=${activePage}&limit=10`
+                `${process.env.NEXT_PUBLIC_API_URL}/activity-locations?page=${activePage}&limit=4`
             );
             if (!response.ok) {
                 throw new Error("Error fetching locations");
             }
             const data = await response.json();
-            console.log(data)
-            console.log(data.results.locations);
+            //console.log(data)
+            //console.log(data.results.locations);
             return data.results.locations;
         } catch (error) {
             setError("An error occurred. Please try again.");
@@ -50,7 +50,7 @@ const Trip: React.FC = () => {
             setLoading(false);
         }
     };
-    
+
 
     const renderContent = () => {
         switch (activeMenu) {
@@ -110,6 +110,7 @@ const Trip: React.FC = () => {
 interface Location {
     id?: string;
     name: string;
+    imageUrl: string;
     locationType: string;
     open_at: string;
     close_at: string;
@@ -170,21 +171,26 @@ const TripLocation: React.FC<{
                                     <input type="checkbox" />
                                 </td>
                                 <td className="p-4 flex items-center">
-                                    <img src={"/pictures/HoaLo.png"} alt={location.name} className="rounded mr-2" style={{ width: "50px", height: "50px" }} />
+                                    <img src={location.imageUrl} alt={location.name} className="rounded mr-2" style={{ width: "50px", height: "50px" }} />
                                     {location.name || "Unknown Location"}
                                 </td>
-                                <td className="p-4">{location.locationType || "N/A"}</td>
-                                <td className="p-4">{location.open_at || "N/A"}</td>
-                                <td className="p-4">{location.close_at || "N/A"}</td>
+                                <td className="p-4 text-center">{location.locationType || "N/A"}</td>
+                                <td className="p-4 text-center">{location.open_at || "N/A"}</td>
+                                <td className="p-4 text-center">{location.close_at || "N/A"}</td>
                                 <td className="p-4">{location.address || "N/A"}</td>
                                 <td className="p-4">
-                                    <div className="dropdown">
+                                    <div className="relative inline-block group">
                                         <i className="fas fa-ellipsis-h cursor-pointer"></i>
-                                        <div className="dropdown-content">
-                                            <a href="#" onClick={() => setEditItem(location)}>Edit</a>
-                                            <a href="#" onClick={() => setDeleteItem(location)}>Delete</a>
+                                        <div className="dropdown-content hidden absolute bg-white shadow-lg z-10 rounded-lg group-hover:block">
+                                            <a href="#" onClick={() => setEditItem(location)} className="text-black py-2 px-3 block no-underline hover:bg-gray-200">
+                                                Edit
+                                            </a>
+                                            <a href="#" onClick={() => setDeleteItem(location)} className="text-black py-2 px-3 block no-underline hover:bg-gray-200">
+                                                Delete
+                                            </a>
                                         </div>
                                     </div>
+
                                 </td>
                             </tr>
                         ))
@@ -196,18 +202,32 @@ const TripLocation: React.FC<{
                 </tbody>
             </table>
             <div className="flex justify-center mt-4">
-                <button className="pagination-button " onClick={() => activePage > 1 && setActivePage(activePage - 1)}>
+                <button
+                    className="pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0]"
+                    onClick={() => activePage > 1 && setActivePage(activePage - 1)}
+                >
                     &lt;
                 </button>
+
                 {[1, 2, 3, 4].map((page) => (
-                    <button key={page} className={`pagination-button ${activePage === page ? 'active' : ''}`} onClick={() => setActivePage(page)}>
+                    <button
+                        key={page}
+                        className={`pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0] ${activePage === page ? 'bg-custom-blue text-white font-bold' : ''}`}
+                        onClick={() => setActivePage(page)}
+                    >
                         {page}
                     </button>
                 ))}
-                <button className="pagination-button" onClick={() => setActivePage(activePage + 1)}>
+
+                <button
+                    className="pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0]"
+                    onClick={() => setActivePage(activePage + 1)}
+                >
                     &gt;
                 </button>
             </div>
+
+
         </div>
     );
 };
