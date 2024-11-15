@@ -5,6 +5,7 @@ import HeaderSection from './HeaderSection';
 import Pagination from '../../Pagination';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 
 const HereMap = dynamic(() => import('@/app/components/HereMap'), {
   ssr: false, // Disable ssr for HereMap component
@@ -15,9 +16,10 @@ const MainContent = () => {
   const [limit, setLimit] = useState(Number(process.env.NEXT_PUBLIC_DEFAULT_LIMIT));
   const [totalPages, setTotalPages] = useState(1);
   const [activeType, setActiveType] = useState("thingsToDo");
-
+ 
+  
   return (
-    <div className="flex flex-col lg:flex-row gap-5 p-5">
+    <div className="flex flex-col lg:flex-row gap-5 p-5" id="main-content">
       {/* Left Content */}
       <div className="flex-1 lg:flex-[1.6]">
         {/* Header Section */}

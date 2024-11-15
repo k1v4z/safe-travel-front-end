@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface IPosterItemProps{
     title: string,
@@ -25,7 +26,8 @@ const PosterItem = (props: IPosterItemProps) => {
       </p>
       <div className="flex justify-center items-center">
         <button className="mt-5 font-poppins text-black py-3 px-6 font-normal rounded-lg border-[2px] border-black hover:bg-[#6fdd6f] hover:font-bold">
-          <div className="flex flex-row gap-2">
+          <Link href='/planning'>
+            <div className="flex flex-row gap-2">
             <Image
               src={props.buttonImg}
               alt=""
@@ -34,6 +36,7 @@ const PosterItem = (props: IPosterItemProps) => {
             />
             <p>{props.buttonText}</p>
           </div>
+          </Link>
         </button>
       </div>
     </div>

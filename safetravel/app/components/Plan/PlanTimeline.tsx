@@ -3,6 +3,7 @@ import { useState } from "react";
 import ActivityItem from "./ActivityItem";
 import { Plan, ProvincePlan} from "@/app/lib/contract/IActivity";
 import { formatDate } from "@/app/lib/formatDate";
+import Link from "next/link";
 
 
 interface IPlanTimeLineProps {
@@ -56,8 +57,12 @@ const PlanTimeline = (planTimeLineProps: IPlanTimeLineProps) => {
           {planTimeLineProps.plan.activities && planTimeLineProps.plan.activities.map((activity) => (
             <ActivityItem updateMapLocation={planTimeLineProps.updateMapLocation} activity={activity} isEdit={isEdit} key={activity.id}/>
           ))}
-          
         </div>
+        <Link href={'/planning?page=3#main-content'}>
+          <div className="absolute p-2 left-auto top-auto cursor-pointer transform -translate-y-1/2 bg-white w-auto font-bold h-auto rounded-full">
+            + Add
+          </div>
+        </Link>
       </div>
     </div>
   );
