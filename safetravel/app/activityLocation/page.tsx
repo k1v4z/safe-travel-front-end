@@ -11,6 +11,7 @@ const Trip: React.FC = () => {
     const [activeMenu, setActiveMenu] = useState("Trip Location");
     const [activePage, setActivePage] = useState(1);
     const [locations, setLocations] = useState<Location[]>([]);
+    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [addLocation, setAddLocation] = useState<boolean>(false);
@@ -20,8 +21,9 @@ const Trip: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetchLocations();
-                setLocations(response);
+                const { locations, totalPages } = await fetchLocations();
+                setLocations(locations);
+                setTotalPages(totalPages);
             } catch (error) {
                 setError("An error occurred. Please try again.");
             }
@@ -40,17 +42,64 @@ const Trip: React.FC = () => {
                 throw new Error("Error fetching locations");
             }
             const data = await response.json();
-            //console.log(data)
-            //console.log(data.results.locations);
-            return data.results.locations;
+            return {
+                locations: data.results.locations,
+                totalPages: data.results.totalPages,
+            };
         } catch (error) {
             setError("An error occurred. Please try again.");
-            return null;
+            return { locations: [], totalPages: 1 };
         } finally {
             setLoading(false);
         }
     };
 
+    const renderPagination = () => {
+        const paginationButtons = [];
+        const maxVisiblePages = 3;
+
+        const startPage = Math.max(1, activePage - Math.floor(maxVisiblePages / 2));
+        const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        if (activePage > 1) {
+            paginationButtons.push(
+                <button
+                    key="prev"
+                    className="pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0]"
+                    onClick={() => setActivePage(activePage - 1)}
+                >
+                    &lt;
+                </button>
+            );
+        }
+
+        for (let page = startPage; page <= endPage; page++) {
+            paginationButtons.push(
+                <button
+                    key={page}
+                    className={`pagination-button rounded-full px-4 py-2 mx-1 ${activePage === page ? "bg-custom-blue text-white font-bold" : "bg-[#f0f0f0]"
+                        }`}
+                    onClick={() => setActivePage(page)}
+                >
+                    {page}
+                </button>
+            );
+        }
+
+        if (activePage < totalPages) {
+            paginationButtons.push(
+                <button
+                    key="next"
+                    className="pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0]"
+                    onClick={() => setActivePage(activePage + 1)}
+                >
+                    &gt;
+                </button>
+            );
+        }
+
+        return <div className="flex justify-center mt-4">{paginationButtons}</div>;
+    };
 
     const renderContent = () => {
         switch (activeMenu) {
@@ -62,7 +111,8 @@ const Trip: React.FC = () => {
                         locations={locations}
                         activePage={activePage}
                         setActivePage={setActivePage}
-                        fetchLocations={fetchLocations}
+                        totalPages={totalPages}
+                        renderPagination={renderPagination}
                         setAddLocation={setAddLocation}
                         setEditItem={setEditItem}
                         setDeleteItem={setDeleteItem}
@@ -80,7 +130,8 @@ const Trip: React.FC = () => {
                         locations={locations}
                         activePage={activePage}
                         setActivePage={setActivePage}
-                        fetchLocations={fetchLocations}
+                        totalPages={totalPages}
+                        renderPagination={renderPagination}
                         setAddLocation={setAddLocation}
                         setEditItem={setEditItem}
                         setDeleteItem={setDeleteItem}
@@ -128,11 +179,12 @@ const TripLocation: React.FC<{
     locations: Location[];
     activePage: number;
     setActivePage: React.Dispatch<React.SetStateAction<number>>;
-    fetchLocations: () => void;
+    totalPages: number;
+    renderPagination: () => JSX.Element;
     setAddLocation: React.Dispatch<React.SetStateAction<boolean>>;
     setEditItem: React.Dispatch<React.SetStateAction<Location | null>>;
     setDeleteItem: React.Dispatch<React.SetStateAction<Location | null>>;
-}> = ({ locations, activePage, setActivePage, fetchLocations, setAddLocation, setEditItem, setDeleteItem }) => {
+}> = ({ locations, renderPagination, setAddLocation, setEditItem, setDeleteItem }) => {
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
@@ -172,12 +224,12 @@ const TripLocation: React.FC<{
                                 </td>
                                 <td className="p-4 flex items-center">
                                     <img src={location.imageUrl} alt={location.name} className="rounded mr-2" style={{ width: "50px", height: "50px" }} />
-                                    {location.name || "Unknown Location"}
+                                    <span>{location.name}</span>
                                 </td>
-                                <td className="p-4 text-center">{location.locationType || "N/A"}</td>
-                                <td className="p-4 text-center">{location.open_at || "N/A"}</td>
-                                <td className="p-4 text-center">{location.close_at || "N/A"}</td>
-                                <td className="p-4">{location.address || "N/A"}</td>
+                                <td className="p-4 text-center">{location.locationType}</td>
+                                <td className="p-4 text-center">{location.open_at}</td>
+                                <td className="p-4 text-center">{location.close_at}</td>
+                                <td className="p-4">{location.address}</td>
                                 <td className="p-4">
                                     <div className="relative inline-block group">
                                         <i className="fas fa-ellipsis-h cursor-pointer"></i>
@@ -196,44 +248,37 @@ const TripLocation: React.FC<{
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={7} className="text-center p-4">No locations found.</td>
+                            <td colSpan={7} className="text-center py-4">
+                                No locations found.
+                            </td>
                         </tr>
                     )}
                 </tbody>
             </table>
-            <div className="flex justify-center mt-4">
-                <button
-                    className="pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0]"
-                    onClick={() => activePage > 1 && setActivePage(activePage - 1)}
-                >
-                    &lt;
-                </button>
-
-                {[1, 2, 3, 4].map((page) => (
-                    <button
-                        key={page}
-                        className={`pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0] ${activePage === page ? 'bg-custom-blue text-white font-bold' : ''}`}
-                        onClick={() => setActivePage(page)}
-                    >
-                        {page}
-                    </button>
-                ))}
-
-                <button
-                    className="pagination-button rounded-full px-4 py-2 mx-1 bg-[#f0f0f0]"
-                    onClick={() => setActivePage(activePage + 1)}
-                >
-                    &gt;
-                </button>
-            </div>
-
-
+            {renderPagination()}
         </div>
     );
 };
 
-const Post: React.FC = () => <div>Post content goes here...</div>;
-const User: React.FC = () => <div>User content goes here...</div>;
-const Setting: React.FC = () => <div>Setting content goes here...</div>;
+const Post: React.FC = () => (
+    <div className="bg-white p-4 rounded shadow">
+        <h1 className="text-2xl font-bold text-gray-700">Post</h1>
+        <p>Post content goes here...</p>
+    </div>
+);
+
+const User: React.FC = () => (
+    <div className="bg-white p-4 rounded shadow">
+        <h1 className="text-2xl font-bold text-gray-700">User</h1>
+        <p>User content goes here...</p>
+    </div>
+);
+
+const Setting: React.FC = () => (
+    <div className="bg-white p-4 rounded shadow">
+        <h1 className="text-2xl font-bold text-gray-700">Setting</h1>
+        <p>Setting content goes here...</p>
+    </div>
+);
 
 export default Trip;
