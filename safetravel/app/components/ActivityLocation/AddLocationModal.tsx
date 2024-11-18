@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { uploadImage } from "./UploadImage";
 
 interface Location {
     id?: string;
@@ -25,15 +26,20 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
         open_at: "",
         close_at: "",
         address: "",
-        longitude: 0,
-        latitude: 0
+        longitude: undefined,
+        latitude: undefined,
     });
-
+    const [uploadImg, setUploadImg] = useState(false);
     const options = ["Accomodation", "Food", "Museum", "Visit"];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData({
+            ...formData,
+            [name]: name === "longitude" || name === "latitude"
+                ? value === "" ? undefined : parseFloat(value)
+                : value
+        });
     };
 
     const handleClose = () => {
@@ -42,23 +48,25 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // const defaultLongitude = 0.0;
-        // const defaultLatitude = 0.0;
-
-        // const locationData = {
-        //     ...formData,
-        //     longitude: defaultLongitude,
-        //     latitude: defaultLatitude
-        // };
+        const payload = {
+            ...formData,
+            longitude: formData.longitude ?? 0, 
+            latitude: formData.latitude ?? 0,  
+        };
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/activity-location`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(payload),
             });
             const result = await response.json();
+
+
+            console.log("Request body:", payload);
+
+
             if (response.ok) {
                 console.log('Location added successfully:', result);
                 window.location.reload();
@@ -70,20 +78,24 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
             alert("An error occurred. Please try again.");
         }
     };
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file); // Tạo URL cho file ảnh
-            setFormData((prevData) => ({
-                ...prevData,
-                imageUrl,
-            }));
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!event.target.files || event.target.files.length === 0) return;
+
+        const imageFile = event.target.files[0];
+        setUploadImg(true);
+
+        try {
+            const imageUrl = await uploadImage(imageFile, "add-location-folder");
+            setFormData((prev) => ({ ...prev, imageUrl }));
+        } catch (error) {
+            alert("An error occurred while uploading the image.");
+        } finally {
+            setUploadImg(false);
         }
     };
-
     return (
-        <div className="fixed z-10 inset-0 overflow-auto bg-gray-900 bg-opacity-50 pt-16 hidden" style={{ display: "block" }}>
-            <div className="bg-white mx-auto p-4 border border-gray-300 rounded-lg w-[720px] relative">
+        <div className="fixed z-10 inset-0 overflow-auto bg-gray-900 bg-opacity-50 pt-16 hidden flex items-center justify-center" style={{ display: "block" }}>
+            <div className="bg-white mx-auto p-4 border border-gray-300 rounded-lg w-[680px] max-h-[90vh] overflow-auto relative">
                 {/* Close Button */}
                 <span
                     className="absolute top-2 right-2 text-3xl text-gray-600 cursor-pointer hover:text-black focus:outline-none"
@@ -111,28 +123,33 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                     </div>
 
                     {/* Image Upload */}
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageFile">Image</label>
-                        <div className="flex items-center">
+                    <div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageFile">
+                                Upload Image
+                            </label>
                             <input
                                 type="file"
                                 id="imageFile"
                                 name="imageFile"
                                 accept="image/*"
-                                onChange={handleFileChange}  
+                                onChange={handleFileChange}
                                 className="hidden"
                             />
                             <button
                                 type="button"
-                                onClick={() => document.getElementById('imageFile')?.click()}  
+                                onClick={() => document.getElementById('imageFile')?.click()}
                                 className="shadow appearance-none border rounded py-2 px-4 bg-[#326D7B] text-white font-bold hover:bg-blue-700 focus:outline-none focus:shadow-outline"
                             >
                                 Select Image
                             </button>
-                            {formData.imageUrl && (
-                                <img src={formData.imageUrl} alt="Preview" className="ml-4 w-16 h-16 object-cover rounded" />
-                            )}
                         </div>
+                        {formData.imageUrl && (
+                            <div className="mt-4">
+                                <img src={formData.imageUrl} alt="Uploaded" className="w-32 h-32 object-cover rounded" />
+                                <p className="mt-2 text-sm text-gray-600">{formData.imageUrl}</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Location Type */}
@@ -200,7 +217,41 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
                     </div>
+                    {/* Longitude */}
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="longitude">
+                            Longitude
+                        </label>
+                        <input
+                            type="number"
+                            id="longitude"
+                            name="longitude"
+                            value={formData.longitude}
+                            onChange={handleChange}
+                            step="0.000001" 
+                            min="-180" 
+                            max="180"  
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                    </div>
 
+                    {/* Latitude */}
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="latitude">
+                            Latitude
+                        </label>
+                        <input
+                            type="number"
+                            id="latitude"
+                            name="latitude"
+                            value={formData.latitude}
+                            onChange={handleChange}
+                            step="0.000001" 
+                            min="-90" 
+                            max="90"  
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                    </div>
                     {/* Buttons */}
                     <div className="flex items-center justify-end">
                         <button

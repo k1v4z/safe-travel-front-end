@@ -162,7 +162,7 @@ interface Location {
     id?: string;
     name: string;
     imageUrl: string;
-    locationType: string;
+    locationOnTypes: { type: { name: string } }[];
     open_at: string;
     close_at: string;
     address: string;
@@ -226,14 +226,14 @@ const TripLocation: React.FC<{
                                     <img src={location.imageUrl} alt={location.name} className="rounded mr-2" style={{ width: "50px", height: "50px" }} />
                                     <span>{location.name}</span>
                                 </td>
-                                <td className="p-4 text-center">{location.locationType}</td>
+                                <td className="p-4 text-center">{location.locationOnTypes.map((t) => t.type.name).join(", ")}</td>
                                 <td className="p-4 text-center">{location.open_at}</td>
                                 <td className="p-4 text-center">{location.close_at}</td>
                                 <td className="p-4">{location.address}</td>
                                 <td className="p-4">
                                     <div className="relative inline-block group">
                                         <i className="fas fa-ellipsis-h cursor-pointer"></i>
-                                        <div className="dropdown-content hidden absolute bg-white shadow-lg z-10 rounded-lg group-hover:block">
+                                        <div className="dropdown-content hidden bg-white fixed shadow-lg z-10 rounded-lg group-hover:block">
                                             <a href="#" onClick={() => setEditItem(location)} className="text-black py-2 px-3 block no-underline hover:bg-gray-200">
                                                 Edit
                                             </a>

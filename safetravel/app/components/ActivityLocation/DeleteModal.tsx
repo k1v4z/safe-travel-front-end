@@ -10,7 +10,7 @@ interface Location {
     id?: string;
     name: string;
     imageUrl: string;
-    locationType: string;
+    locationOnTypes: { type: { name: string } }[];
     open_at: string;
     close_at: string;
     address: string;
