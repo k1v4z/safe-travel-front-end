@@ -21,6 +21,8 @@ const config: Config = {
       },
       animation: {
         boatMove: 'boatMove 2s ease-in-out forwards',
+        spin: "spin 2s linear infinite",
+        "spin-fast": "spin 1s linear infinite",
       },
       fontFamily: {
         romana: ['"Romana BT"', 'serif'],
