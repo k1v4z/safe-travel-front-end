@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import '@fortawesome/fontawesome-free/css/all.min.css'
 import Header from "../components/ActivityLocation/Header";
 import Sidebar from "../components/ActivityLocation/Sidebar";
 import AddLocationModal from "../components/ActivityLocation/AddLocationModal";

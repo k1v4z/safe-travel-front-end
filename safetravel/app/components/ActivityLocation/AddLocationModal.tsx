@@ -130,7 +130,7 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
         }
     };
     return (
-        <div className="fixed z-10 inset-0 overflow-auto bg-gray-900 bg-opacity-50 pt-16 hidden flex items-center justify-center" style={{ display: "block" }}>
+        <div className="fixed z-10 inset-0 overflow-auto bg-gray-900 bg-opacity-50 pt-16 flex items-center justify-center" style={{ display: "block" }}>
             <div className="bg-white mx-auto p-4 border border-gray-300 rounded-lg w-[680px] max-h-[90vh] overflow-auto relative">
                 {/* Close Button */}
                 <span
