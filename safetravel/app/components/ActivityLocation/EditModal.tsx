@@ -20,10 +20,10 @@ interface ModalProps {
 }
 const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
     const [formData, setFormData] = useState<Location>({
-        id: item?.id || "", // Nếu item null, dùng giá trị mặc định
+        id: item?.id || "", 
         name: item?.name || "",
         imageUrl: item?.imageUrl || "",
-        locationOnTypes: item?.locationOnTypes || [{ type: { name: "" } }], // Xử lý locationOnTypes
+        locationOnTypes: item?.locationOnTypes || [{ type: { name: "" } }], 
         open_at: item?.open_at || "",
         close_at: item?.close_at || "",
         address: item?.address || "",
@@ -35,11 +35,17 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
     const oldLocationType = item?.locationOnTypes[0]?.type?.name || '';
     const locationType = item?.locationOnTypes[0]?.type?.name || '';
 
+    const [errors, setErrors] = useState({
+        open_at: "",
+        close_at: "",
+        longitude: "",
+        latitude: "",
+    });
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => {
             if (name === "locationType") {
-                // Cập nhật locationType trong locationOnTypes
                 return {
                     ...prev,
                     locationOnTypes: [{ type: { name: value } }],
@@ -51,6 +57,35 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                 };
             }
         });
+        switch (name) {
+            case 'open_at':
+            case 'close_at':
+                const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+                if (!timeRegex.test(value)) {
+                    setErrors({ ...errors, [name]: 'Invalid time format. Expected HH:MM.' });
+                } else {
+                    setErrors({ ...errors, [name]: '' });
+                }
+                break;
+            case 'longitude':
+                const longitudeValue = parseFloat(value);
+                if (isNaN(longitudeValue) || longitudeValue < -180 || longitudeValue > 180) {
+                    setErrors({ ...errors, [name]: 'Longitude must be between -180 and 180.' });
+                } else {
+                    setErrors({ ...errors, [name]: '' });
+                }
+                break;
+            case 'latitude':
+                const latitudeValue = parseFloat(value);
+                if (isNaN(latitudeValue) || latitudeValue < -90 || latitudeValue > 90) {
+                    setErrors({ ...errors, [name]: 'Latitude must be between -90 and 90.' });
+                } else {
+                    setErrors({ ...errors, [name]: '' });
+                }
+                break;
+            default:
+                break;
+        }
     };
 
     const handleClose = () => {
@@ -76,7 +111,7 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                 },
                 body: JSON.stringify(locationData),
             });
-            console.log("Data:", locationData);
+
             const result = await response.json();
             if (response.ok) {
                 console.log('Location updated successfully:', result);
@@ -121,18 +156,21 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">Edit Location</h3>
 
                 <form onSubmit={handleSubmit}>
+                    {/* Location Name */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Location Name</label>
                         <input
                             type="text"
                             id="name"
                             name="name"
+                            required
                             value={formData.name}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
                     </div>
 
+                     {/* Image Upload */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageFile">Image</label>
                         <div className="flex items-center">
@@ -155,6 +193,7 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                         </div>
                     </div>
 
+                    {/* Location Type */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="locationType">Type</label>
                         <select
@@ -162,6 +201,7 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                             name="locationType"
                             value={formData.locationOnTypes[0]?.type?.name || ""}
                             onChange={handleChange}
+                            required
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         >
                             <option value="" disabled>Select Type</option>
@@ -172,37 +212,51 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                             ))}
                         </select>
                     </div>
-
+                    
+                    {/* Open At */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="open_at">Open At</label>
                         <input
                             type="text"
                             id="open_at"
                             name="open_at"
+                            required
+                            pattern="^([01]\d|2[0-3]):([0-5]\d)$"
                             value={formData.open_at}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.open_at && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.open_at}</p>
+                        )}
                     </div>
-
+                    
+                    {/* Close At */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="close_at">Close At</label>
                         <input
                             type="text"
                             id="close_at"
                             name="close_at"
+                            required
+                            pattern="^([01]\d|2[0-3]):([0-5]\d)$"
                             value={formData.close_at}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.close_at && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.close_at}</p>
+                        )}
                     </div>
-
+                    
+                    {/* Address */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">Address</label>
                         <input
                             type="text"
                             id="address"
                             name="address"
+                            required
                             value={formData.address}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -218,13 +272,18 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                             name="longitude"
                             value={formData.longitude}
                             onChange={handleChange}
-                            step="0.000001" // Cho phép nhập số thập phân
-                            min="-180" // Giới hạn giá trị thấp nhất
-                            max="180"  // Giới hạn giá trị cao nhất
+                            required
+                            step="0.000001" 
+                            min="-180" 
+                            max="180"  
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.longitude && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.longitude}</p>
+                        )}
                     </div>
-
+                    
+                    {/* Latitude */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="latitude">
                             Latitude
@@ -233,14 +292,19 @@ const EditModal: React.FC<ModalProps> = ({ item, setEditItem }) => {
                             type="number"
                             id="latitude"
                             name="latitude"
+                            required
                             value={formData.latitude}
                             onChange={handleChange}
-                            step="0.000001" // Cho phép nhập số thập phân
-                            min="-90" // Giới hạn giá trị thấp nhất
-                            max="90"  // Giới hạn giá trị cao nhất
+                            step="0.000001" 
+                            min="-90" 
+                            max="90"  
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.latitude && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.latitude}</p>
+                        )}
                     </div>
+
                     <div className="flex items-center justify-end">
                         <button
                             type="button"

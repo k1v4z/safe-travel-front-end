@@ -18,7 +18,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeMenu, setActiveMenu }) => (
                         onClick={() => setActiveMenu(item)}
                     >
                         <a href="#" className="flex items-center">
-                            {/* <i className={`fas fa-${item === 'Dashboard' ? 'tachometer-alt' : item === 'Trip Location' ? 'map-marker-alt' : item === 'Post' ? 'edit' : item === 'User' ? 'user' : 'cog'} mr-2`}></i> {item} */}
                             <i
                                 className={`mr-2`}
                                 style={{
@@ -43,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeMenu, setActiveMenu }) => (
         <div className="flex items-center">
             <img src="/pictures/ava_dashboard.png" alt="User Avatar" className="rounded-full mr-2" />
             <div>
-                <p className="text-[#332821]">Anh Phuong</p>
+                <p className="text-[#332821]">Mai Thi</p>
                 <p className="text-gray-500 text-sm">Account Settings</p>
             </div>
         </div>

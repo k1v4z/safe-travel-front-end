@@ -30,6 +30,14 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
         latitude: undefined,
     });
     const [uploadImg, setUploadImg] = useState(false);
+
+    const [errors, setErrors] = useState({
+        open_at: "",
+        close_at: "",
+        longitude: "",
+        latitude: "",
+    });
+
     const options = ["Accomodation", "Food", "Museum", "Visit"];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -40,7 +48,37 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                 ? value === "" ? undefined : parseFloat(value)
                 : value
         });
+        switch (name) {
+            case 'open_at':
+            case 'close_at':
+                const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+                if (!timeRegex.test(value)) {
+                    setErrors({ ...errors, [name]: 'Invalid time format. Expected HH:MM.' });
+                } else {
+                    setErrors({ ...errors, [name]: '' });
+                }
+                break;
+            case 'longitude':
+                const longitudeValue = parseFloat(value);
+                if (isNaN(longitudeValue) || longitudeValue < -180 || longitudeValue > 180) {
+                    setErrors({ ...errors, [name]: 'Longitude must be between -180 and 180.' });
+                } else {
+                    setErrors({ ...errors, [name]: '' });
+                }
+                break;
+            case 'latitude':
+                const latitudeValue = parseFloat(value);
+                if (isNaN(latitudeValue) || latitudeValue < -90 || latitudeValue > 90) {
+                    setErrors({ ...errors, [name]: 'Latitude must be between -90 and 90.' });
+                } else {
+                    setErrors({ ...errors, [name]: '' });
+                }
+                break;
+            default:
+                break;
+        }
     };
+
 
     const handleClose = () => {
         if (setAddLocation) setAddLocation(false);
@@ -48,10 +86,11 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         const payload = {
             ...formData,
-            longitude: formData.longitude ?? 0, 
-            latitude: formData.latitude ?? 0,  
+            longitude: formData.longitude ?? 0,
+            latitude: formData.latitude ?? 0,
         };
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/activity-location`, {
@@ -62,9 +101,6 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                 body: JSON.stringify(payload),
             });
             const result = await response.json();
-
-
-            console.log("Request body:", payload);
 
 
             if (response.ok) {
@@ -116,6 +152,7 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             type="text"
                             id="name"
                             name="name"
+                            required
                             value={formData.name}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -126,7 +163,7 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                     <div>
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageFile">
-                                Upload Image
+                                Image
                             </label>
                             <input
                                 type="file"
@@ -135,13 +172,14 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                                 accept="image/*"
                                 onChange={handleFileChange}
                                 className="hidden"
+                                required
                             />
                             <button
                                 type="button"
                                 onClick={() => document.getElementById('imageFile')?.click()}
                                 className="shadow appearance-none border rounded py-2 px-4 bg-[#326D7B] text-white font-bold hover:bg-blue-700 focus:outline-none focus:shadow-outline"
                             >
-                                Select Image
+                                {uploadImg ? "Uploading..." : "Select Image"}
                             </button>
                         </div>
                         {formData.imageUrl && (
@@ -162,6 +200,7 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             name="locationType"
                             value={formData.locationType}
                             onChange={handleChange}
+                            required
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         >
                             <option value="" disabled>Select Type</option>
@@ -182,10 +221,16 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             type="text"
                             id="open_at"
                             name="open_at"
+                            required
+                            pattern="^([01]\d|2[0-3]):([0-5]\d)$"
+                            placeholder="Expected HH:MM."
                             value={formData.open_at}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.open_at && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.open_at}</p>
+                        )}
                     </div>
 
                     {/* Close At */}
@@ -197,10 +242,16 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             type="text"
                             id="close_at"
                             name="close_at"
+                            required
+                            placeholder="Expected HH:MM."
+                            pattern="^([01]\d|2[0-3]):([0-5]\d)$"
                             value={formData.close_at}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.close_at && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.close_at}</p>
+                        )}
                     </div>
 
                     {/* Address */}
@@ -212,6 +263,7 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             type="text"
                             id="address"
                             name="address"
+                            required
                             value={formData.address}
                             onChange={handleChange}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -228,11 +280,15 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             name="longitude"
                             value={formData.longitude}
                             onChange={handleChange}
-                            step="0.000001" 
-                            min="-180" 
-                            max="180"  
+                            required
+                            step="0.000001"
+                            min="-180"
+                            max="180"
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.longitude && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.longitude}</p>
+                        )}
                     </div>
 
                     {/* Latitude */}
@@ -246,11 +302,15 @@ const AddLocationModal: React.FC<ModalProps> = ({ setAddLocation }) => {
                             name="latitude"
                             value={formData.latitude}
                             onChange={handleChange}
-                            step="0.000001" 
-                            min="-90" 
-                            max="90"  
+                            required
+                            step="0.000001"
+                            min="-90"
+                            max="90"
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         />
+                        {errors.latitude && (
+                            <p className="text-red-500 text-xs italic mt-2">{errors.latitude}</p>
+                        )}
                     </div>
                     {/* Buttons */}
                     <div className="flex items-center justify-end">
