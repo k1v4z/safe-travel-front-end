@@ -11,6 +11,7 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'custom-blue': '#326D7B'
       },
       keyframes: {
         boatMove: {
@@ -28,8 +29,10 @@ const config: Config = {
         maname: ['"Maname"', 'serif'],
         inter: ['"Inter"', 'serif'],
         gideonroman: ['"GideonRoman"', 'serif'],
-        roboto_light: ['"Roboto-Light"', 'serif']
-      }
+        roboto_light: ['"Roboto-Light"', 'serif'],
+        roboto: ['Roboto', 'sans-serif']
+      },
+      width: { '180': '720px', '135': '541px', },
     },
   },
   plugins: [],

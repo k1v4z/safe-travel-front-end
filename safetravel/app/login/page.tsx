@@ -48,10 +48,13 @@ export default function Login() {
         authContext?.setAuth(true)
         localStorage.setItem('username', username)
         localStorage.setItem('userId', userId)
-        setErrMessage(''); // Clear any error messages
-        router.push('/') //redirect to home page
+        setErrMessage(''); 
+        router.push('/') 
         
-      } else{
+      } else if(data.code == 'LOG03'){
+        console.log('admin')
+      } 
+      else{
         // Handle error response
         setErrMessage(data.message);
       }
