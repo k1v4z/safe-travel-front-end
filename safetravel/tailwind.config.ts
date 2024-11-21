@@ -32,7 +32,8 @@ const config: Config = {
         inter: ['"Inter"', 'serif'],
         gideonroman: ['"GideonRoman"', 'serif'],
         roboto_light: ['"Roboto-Light"', 'serif']
-      }
+      },
+      width: { '180': '720px', '135': '541px', },
     },
   },
   plugins: [],
