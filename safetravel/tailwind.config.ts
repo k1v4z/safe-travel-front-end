@@ -33,7 +33,11 @@ const config: Config = {
         roboto_light: ['"Roboto-Light"', 'serif'],
         lato: ['Lato', 'sans-serif'],
         roboto: ['Roboto', 'sans-serif'],
-      }
+      },
+      width: { 
+        '180': '720px', 
+        '135': '541px', 
+      },
     },
   },
   plugins: [],
