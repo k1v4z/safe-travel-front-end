@@ -31,7 +31,8 @@ const config: Config = {
         inter: ['"Inter"', 'serif'],
         gideonroman: ['"GideonRoman"', 'serif'],
         roboto_light: ['"Roboto-Light"', 'serif'],
-        lato: ["Lato", 'sans-serif']
+        lato: ['Lato', 'sans-serif'],
+        roboto: ['Roboto', 'sans-serif'],
       }
     },
   },
