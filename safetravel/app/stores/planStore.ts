@@ -17,6 +17,7 @@ interface Plan {
     kind_name: string;
     province_name: string;
     activities: Activity[];
+    isAITrip?: boolean;
 }
 
 interface PlanState {
@@ -35,7 +36,8 @@ const usePlanStore = create<PlanState>((set) => ({
         have_children: false,
         kind_name: '',
         province_name: '',
-        activities: []
+        activities: [],
+        isAITrip: false
     },
     setPlan: (plan: Plan) => set({ plan })
 }));

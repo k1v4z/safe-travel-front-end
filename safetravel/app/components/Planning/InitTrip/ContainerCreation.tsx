@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from "react";
 import HeaderCreation from "./HeaderCreation";
 import TripInput from "./TripInput";
@@ -13,7 +14,8 @@ const ContainerCreation = (props: ContainerCreationProps) => {
   const { plan, setPlan } = usePlanStore();
   const [isFormValid, setIsFormValid] = useState(false);
   
-  useEffect(() => {
+
+  useEffect(() => { 
     setIsFormValid(plan.title.trim() !== "" && plan.province_name.trim() !== "");
   }, [plan.title, plan.province_name]);
 
