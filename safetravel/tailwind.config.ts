@@ -22,6 +22,8 @@ const config: Config = {
       },
       animation: {
         boatMove: 'boatMove 2s ease-in-out forwards',
+        spin: "spin 2s linear infinite",
+        "spin-fast": "spin 1s linear infinite",
       },
       fontFamily: {
         romana: ['"Romana BT"', 'serif'],
@@ -29,8 +31,7 @@ const config: Config = {
         maname: ['"Maname"', 'serif'],
         inter: ['"Inter"', 'serif'],
         gideonroman: ['"GideonRoman"', 'serif'],
-        roboto_light: ['"Roboto-Light"', 'serif'],
-        roboto: ['Roboto', 'sans-serif']
+        roboto_light: ['"Roboto-Light"', 'serif']
       },
       width: { '180': '720px', '135': '541px', },
     },
