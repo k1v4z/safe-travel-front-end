@@ -23,23 +23,27 @@ interface Plan {
 interface PlanState {
     plan: Plan;
     setPlan: (plan: Plan) => void;
+    clearStore: () => void;
 }
 
+const initialPlanState = {
+    user_id: '',
+    title: '',
+    date: '26/11/2024',
+    transportation: 'Private Vehicle',
+    money: 0,
+    state: 'pending',
+    have_children: false,
+    kind_name: '',
+    province_name: 'Da Nang',
+    activities: [],
+    isAITrip: false
+};
+
 const usePlanStore = create<PlanState>((set) => ({
-    plan: {
-        user_id: '',
-        title: '',
-        date: '',
-        transportation: 'Private Vehicle',
-        money: 0,
-        state: 'pending',
-        have_children: false,
-        kind_name: '',
-        province_name: '',
-        activities: [],
-        isAITrip: false
-    },
-    setPlan: (plan: Plan) => set({ plan })
+    plan: { ...initialPlanState },
+    setPlan: (plan: Plan) => set({ plan }),
+    clearStore: () => set({ plan: { ...initialPlanState } })
 }));
 
 export default usePlanStore;

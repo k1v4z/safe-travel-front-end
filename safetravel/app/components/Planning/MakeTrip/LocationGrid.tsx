@@ -64,6 +64,8 @@ const LocationGrid = ({page, limit, setTotalPages, activeType}: LocationGridProp
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/activity-locations?page=${page}&limit=${limit}&province=${plan.province_name}${activeType != 'thingsToDo' ? `&type=${activeType}` : ''}`);
         const data = await response.json();
+        console.log(data);
+        
         setCardData(data.results.locations);
         setTotalPages(data.results.totalPages);
       } catch (error) {

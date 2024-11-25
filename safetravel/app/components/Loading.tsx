@@ -1,13 +1,7 @@
 "use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer";
+import React from "react";
 
 export default function LoadingPage() {
-  const router = useRouter();
-
   return (
     <div className="bg-[#D2FBFD]">
       <div className="flex items-center justify-center h-screen ">

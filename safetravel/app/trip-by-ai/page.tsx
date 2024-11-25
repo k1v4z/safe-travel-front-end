@@ -1,15 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import WeatherWidget from "../../components/Planning6/WeatherWidget";
-import TripHeader from "../../components/Planning6/TripHeader";
-import RecommendationCard from "../../components/Planning6/RecommendationCard";
-import PlanSummary from "../../components/Planning6/PlanSummary";
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer";
-import usePlanStore from "../../stores/planStore";
-import LoadingPage from "../../components/Loading";
+import WeatherWidget from "../components/Planning6/WeatherWidget";
+import TripHeader from "../components/Planning6/TripHeader";
+import RecommendationCard from "../components/Planning6/RecommendationCard";
+import PlanSummary from "../components/Planning6/PlanSummary";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer";
+import usePlanStore from "../stores/planStore";
+import LoadingPage from "../components/Loading";
 
-const AIPlanning = () => {
+const HomePage = () => {
   const [data, setData] = useState([]);
   const [weather, setWeather] = useState({
     temperature: 0,
@@ -28,7 +28,7 @@ const AIPlanning = () => {
       setLoading(true);
       const requestBody = {
         province: plan.province_name,
-        planDate: "30/11/2024",
+        planDate: plan.date,
       };
 
       const response = await fetch(
@@ -54,6 +54,7 @@ const AIPlanning = () => {
 
   return (
     <div className="bg-[#D2FBFD] min-h-screen min-w-96">
+      <Header />
       {loading ? (
         <LoadingPage />
       ) : (
@@ -66,8 +67,9 @@ const AIPlanning = () => {
           ))}
         </div>
       )}
+      <Footer />
     </div>
   );
 };
 
-export default AIPlanning;
+export default HomePage;

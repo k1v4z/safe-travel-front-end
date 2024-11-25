@@ -1,20 +1,37 @@
 import React from 'react';
 
-const RecommendationCard = () => {
+interface RecommendationCard {
+  name: string;
+  address: string;
+  open_at: string;
+  close_at: string;
+  longitude: string;
+  latitude: string;
+  imageUrl: string;
+  transportation: string;
+  money: string;
+  locationType: string;
+}
+
+interface RecommendationCardProps {
+  recommendation: RecommendationCard;
+}
+
+const RecommendationCard = ({recommendation}: RecommendationCardProps) => {
   return (
     <div className="bg-blue-50 shadow-md rounded-3xl flex  items-center font-gideonroman space-x-6 m-6">
       {/* Image Section */}
       <div className="relative w-1/3 h-52">
         <img
-          src="/pictures/154_hue 1.png"
+          src={recommendation.imageUrl}
           alt="The Imperial City of Hue"
-          className=" object-fit w-full h-full"
+          className=" object-cover w-full h-full border rounded-3xl"
         />
         <button className="absolute top-2 left-2 bg-white p-1 rounded-full shadow-md">
           <img
             src="/pictures/heart.png"
             alt="Heart Icon"
-            className="w-5 h-5"
+            className="w-4 h-4"
           />
         </button>
       </div>
@@ -23,25 +40,25 @@ const RecommendationCard = () => {
       <div className="flex-grow">
         {/* Title */}
         <h2 className="text-2xl font-bold text-cyan-700 text-center mb-2 font-inter">
-          The Imperial City of Hue
+          {recommendation.name}
         </h2>
         {/* Details */}
       <div className="text-lg text-black grid grid-cols-2 gap-x-6 gap-y-6 ml-4">
         <div className="flex items-center font-gideonroman">
           <img src="/pictures/Screenshot.png" alt="Location" className="w-5 h-6 mr-2" />
-          <p>Phu Hau, Hue, Thua Thien Hue</p>
+          <p>{recommendation.address}</p>
         </div>
         <div className="flex items-center font-gideonroman">
           <img src="/pictures/ticket.png" alt="Ticket" className="w-5 h-5 mr-2" />
-          <p>200,000 VND</p>
+          <p>{recommendation.money}</p>
         </div>
         <div className="flex items-center font-gideonroman">
           <img src="/pictures/Alarm-Clock.png" alt="Clock" className="w-5 h-5 mr-2" />
-          <p>07:30–17:00</p>
+          <p>{recommendation.open_at}–{recommendation.close_at}</p>
         </div>
         <div className="flex items-center font-gideonroman">
           <img src="/pictures/Car.png" alt="Car" className="w-5 h-5 mr-2" />
-          <p>150,000 VND</p>
+          <p>{recommendation.transportation}</p>
         </div>
         <div className="flex items-center font-gideonroman">
           <img src="/pictures/blank-calendar.png" alt="Calendar" className="w-5 h-5 mr-2" />
@@ -49,7 +66,7 @@ const RecommendationCard = () => {
         </div>
         <div className="flex items-center font-gideonroman">
           <img src="/pictures/Bookmark.png" alt="Visit" className="w-5 h-5 mr-2" />
-          <p>Visit</p>
+          <p>{recommendation.locationType}</p>
         </div>
       </div>
 
