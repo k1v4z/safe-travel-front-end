@@ -76,7 +76,6 @@ const LocationGrid = ({page, limit, setTotalPages, activeType}: LocationGridProp
     fetchData();
   }, [page, limit, plan.province_name, activeType]);
 
-  console.log(plan);
   
 
   return (

@@ -15,9 +15,10 @@ interface RecommendationCard {
 
 interface RecommendationCardProps {
   recommendation: RecommendationCard;
+  onClick: (item: any) => void;
 }
 
-const RecommendationCard = ({recommendation}: RecommendationCardProps) => {
+const RecommendationCard = ({recommendation, onClick}: RecommendationCardProps) => {
   return (
     <div className="bg-blue-50 shadow-md rounded-3xl flex  items-center font-gideonroman space-x-6 m-6">
       {/* Image Section */}
@@ -27,7 +28,9 @@ const RecommendationCard = ({recommendation}: RecommendationCardProps) => {
           alt="The Imperial City of Hue"
           className=" object-cover w-full h-full border rounded-3xl"
         />
-        <button className="absolute top-2 left-2 bg-white p-1 rounded-full shadow-md">
+        <button onClick={
+          () => onClick(recommendation)
+        } className="absolute top-2 left-2 bg-white p-1 rounded-full shadow-md">
           <img
             src="/pictures/heart.png"
             alt="Heart Icon"
