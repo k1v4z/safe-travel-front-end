@@ -39,16 +39,13 @@ const Home: React.FC = () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            credentials: "include",
-          }
+          credentials: 'include',
         });  // Thay thế bằng API thực tế
         if (!response.ok) {
           throw new Error("Failed to fetch users.");
         }
         const data = await response.json();
-        setUsers(data.users); // Lưu dữ liệu người dùng vào state
+        setUsers(data.users.users); // Lưu dữ liệu người dùng vào state
         setLoading(false);
       } catch (error) {
         setError("An error occurred while fetching users.");
