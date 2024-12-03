@@ -6,46 +6,43 @@ import UserTable from "../components/UserManagement/UserTable";
 import Pagination from "../components/UserManagement/Pagination";
 import Sidebar from "../components/ActivityLocation/Sidebar";
 import Header from "../components/ActivityLocation/Header";
-
-interface User {
-  id: string;
-  username: string;
-  role: "Administrator" | "Viewer";
-  status: "Active" | "Inactive";
-  lastLogin: string;
-  avatar: string;
-}
+import { faker } from "@faker-js/faker";
+import AddUserForm from "../components/UserManagement/AddUserForm";
+import { User } from "../components/UserManagement/User";
 
 const Home: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]); // Dữ liệu người dùng
   const [activeMenu, setActiveMenu] = useState("User");
-  const [currentPage, setCurrentPage] = useState(1);
   const [showAddUserForm, setShowAddUserForm] = useState(false); // Hiển thị form thêm người dùng
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(users.length / itemsPerPage);
-  const paginatedUsers = users.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
+  const [activePage, setActivePage] = useState(1); // Trang hiện tại
+  const [totalPages, setTotalPages] = useState(1); // Tổng số trang
   const [loading, setLoading] = useState(true); // Trạng thái đang tải
   const [error, setError] = useState<string | null>(null); // Lỗi khi gọi API
-
-  // Fetch dữ liệu người dùng từ API khi component mount
+  const [searchUsername, setSearchUsername] = useState<string | null>(null);
   useEffect(() => {
+    if (searchUsername) return; // Không thực hiện phân trang khi đang tìm kiếm
+
     setLoading(true);
     setError(null);
+
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-          method: "GET",
-          credentials: 'include',
-        });  // Thay thế bằng API thực tế
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/users?page=${activePage}&pageSize=${itemsPerPage}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
         if (!response.ok) {
           throw new Error("Failed to fetch users.");
         }
+
         const data = await response.json();
-        setUsers(data.users.users); // Lưu dữ liệu người dùng vào state
+        setUsers(data.users.users);
+        setTotalPages(data.users.totalPages);
         setLoading(false);
       } catch (error) {
         setError("An error occurred while fetching users.");
@@ -54,12 +51,101 @@ const Home: React.FC = () => {
     };
 
     fetchUsers();
-  }, []); // Chạy một lần khi component mount
+  }, [activePage]); // Chạy lại khi activePage thay đổi
+  const handleSetStatus = async (username: string, currentStatus: string) => {
+    const newStatus = currentStatus === "Active" ? "Inactive" : "Active";
+  
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/${username}/status`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to update status.");
+      }
+  
+      // Update state locally
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.username === username ? { ...user, status: newStatus } : user
+        )
+      );
+  
+      alert(`User ${username}'s status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      alert("Failed to update user status.");
+    }
+  };
+  
+  // Hàm tìm kiếm user theo username
+  const handleSearchUser = async (username: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/search/${username}`, {
+        method: "GET",
+        credentials: "include",
+      });
+  
+      if (!response.ok) {
+        // Kiểm tra nếu là lỗi 404 (Không tìm thấy)
+        if (response.status === 404) {
+          alert(`No user found with username: "${username}".`);
+          return; // Giữ nguyên bảng hiện tại
+        }
+        throw new Error(`Unexpected response: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+  
+      // Nếu API trả về dữ liệu rỗng
+      if (!data.user && (!data.users || data.users.length === 0)) {
+        alert(`No user found with username: "${username}".`);
+        return;
+      }
+  
+      // Cập nhật danh sách user nếu tìm thấy
+      setUsers(data.user ? [data.user] : data.users);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      alert("An error occurred while fetching user.");
+    }
+  };
+  
+  
+  
 
-  // Thêm người dùng mới vào danh sách
+  // Thêm người dùng mới vào danh sách 
   const handleAddUser = (newUser: User) => {
-    setUsers((prevUsers) => [newUser, ...prevUsers]); // Thêm vào đầu danh sách
-    setShowAddUserForm(false); // Đóng form sau khi thêm người dùng
+    setUsers((prevUsers) => [newUser, ...prevUsers]);
+    setShowAddUserForm(false);
+  };
+
+  const handleDeleteUser = async (username: string) => {
+    console.log("Deleting user:", username); // Kiểm tra username
+    if (window.confirm(`Are you sure you want to delete user ${username}?`)) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${username}`, {
+          method: "DELETE", 
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          throw new Error('Failed to delete user');
+        }
+        setUsers((prevUsers) => 
+          prevUsers.filter((user) => user.username !== username) // Cập nhật danh sách
+        );
+        alert("User deleted successfully");
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        alert("Failed to delete user");
+      }
+    }
   };
 
   const renderContent = () => {
@@ -73,13 +159,18 @@ const Home: React.FC = () => {
       case "User":
         return (
           <>
-            <FilterBar onAddUserClick={() => setShowAddUserForm(true)} />
-            <UserTable users={paginatedUsers} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+            <FilterBar
+              onAddUserClick={() => setShowAddUserForm(true)}
+              onSearch={handleSearchUser} // Truyền hàm tìm kiếm vào FilterBar
+            />            
+            <UserTable users={users} onDelete={handleDeleteUser} onSetStatus={handleSetStatus} />
+            {searchUsername === null && (
+              <Pagination
+                activePage={activePage}
+                totalPages={totalPages}
+                setActivePage={setActivePage} // Cập nhật activePage khi thay đổi
+              />
+            )}
           </>
         );
       case "Setting":
@@ -87,13 +178,18 @@ const Home: React.FC = () => {
       default:
         return (
           <>
-            <FilterBar onAddUserClick={() => setShowAddUserForm(true)} />
-            <UserTable users={paginatedUsers} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
+            <FilterBar
+              onAddUserClick={() => setShowAddUserForm(true)}
+              onSearch={handleSearchUser} // Truyền hàm tìm kiếm vào FilterBar
             />
+            <UserTable users={users} onDelete={handleDeleteUser} onSetStatus={handleSetStatus} />
+            {searchUsername === null && (
+              <Pagination
+                activePage={activePage}
+                totalPages={totalPages}
+                setActivePage={setActivePage} // Cập nhật activePage khi thay đổi
+              />
+            )}
           </>
         );
     }
@@ -120,74 +216,10 @@ const Home: React.FC = () => {
         </main>
       </div>
       {showAddUserForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow">
-            <h2 className="text-xl font-bold mb-4">Add New User</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const newUser: User = {
-                  id: String(users.length + 1).padStart(3, "0"),
-                  username: formData.get("username") as string,
-                  role: formData.get("role") as "Administrator" | "Viewer",
-                  status: formData.get("status") as "Active" | "Inactive",
-                  lastLogin: new Date().toLocaleDateString(),
-                  avatar: "https://via.placeholder.com/150", // Thay bằng ảnh thực tế nếu có
-                };
-                console.log("New User Data:", newUser); // Debug dữ liệu người dùng mới
-                handleAddUser(newUser);
-              }}
-            >
-              <div className="mb-4">
-                <label className="block text-sm font-medium">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  required
-                  className="w-full border border-gray-300 p-2 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium">Role</label>
-                <select
-                  name="role"
-                  required
-                  className="w-full border border-gray-300 p-2 rounded"
-                >
-                  <option value="Administrator">Administrator</option>
-                  <option value="Viewer">Viewer</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium">Status</label>
-                <select
-                  name="status"
-                  required
-                  className="w-full border border-gray-300 p-2 rounded"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
-              <div className="flex items-center justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowAddUserForm(false)}
-                  className="px-4 py-2 bg-gray-300 rounded mr-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#326D7B] text-white rounded"
-                >
-                  Add User
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <AddUserForm
+          onAddUser={handleAddUser}
+          onClose={() => setShowAddUserForm(false)}
+        />
       )}
     </div>
   );
