@@ -6,7 +6,6 @@ import UserTable from "../components/UserManagement/UserTable";
 import Pagination from "../components/UserManagement/Pagination";
 import Sidebar from "../components/ActivityLocation/Sidebar";
 import Header from "../components/ActivityLocation/Header";
-import { faker } from "@faker-js/faker";
 import AddUserForm from "../components/UserManagement/AddUserForm";
 import { User } from "../components/UserManagement/User";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 interface AddUserFormProps {
   onAddUser: (newUser: any) => void; // Adjust `any` to the correct type as needed
@@ -36,7 +37,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
       }
 
       const data = await response.json();
-      alert(`User "${data.user.username}" added successfully!`);
+      toast.success("User added successfully");
       onAddUser(data.user);
 
       // Clear form fields and close modal
