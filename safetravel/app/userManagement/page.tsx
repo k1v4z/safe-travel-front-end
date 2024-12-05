@@ -8,6 +8,7 @@ import Sidebar from "../components/ActivityLocation/Sidebar";
 import Header from "../components/ActivityLocation/Header";
 import AddUserForm from "../components/UserManagement/AddUserForm";
 import { User } from "../components/UserManagement/User";
+import { toast } from "react-toastify";
 
 const Home: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]); // Dữ liệu người dùng
@@ -79,7 +80,7 @@ const Home: React.FC = () => {
       alert(`User ${username}'s status updated to ${newStatus}`);
     } catch (error) {
       console.error("Error updating user status:", error);
-      alert("Failed to update user status.");
+      toast.error("Failed to update user status.");
     }
   };
   
@@ -112,7 +113,7 @@ const Home: React.FC = () => {
       setUsers(data.user ? [data.user] : data.users);
     } catch (error) {
       console.error("Error fetching user:", error);
-      alert("An error occurred while fetching user.");
+      toast.error("An error occurred while fetching user.");
     }
   };
   
@@ -139,10 +140,10 @@ const Home: React.FC = () => {
         setUsers((prevUsers) => 
           prevUsers.filter((user) => user.username !== username) // Cập nhật danh sách
         );
-        alert("User deleted successfully");
+        toast.success("User deleted successfully");
       } catch (error) {
         console.error("Error deleting user:", error);
-        alert("Failed to delete user");
+        toast.error("Failed to delete user");
       }
     }
   };

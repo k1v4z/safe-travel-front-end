@@ -33,30 +33,32 @@ const UserRow: React.FC<UserRowProps> = ({ user, onDelete,onSetStatus   }) => {
         {user.username}
       </td>
       <td className="px-4 py-3">
-        <span
-          className={`inline-flex items-center gap-2 px-2 py-1 rounded text-sm ${
-            user.role === 'Administrator'
-              ? 'bg-purple-100 text-purple-800'
-              : 'bg-blue-100 text-blue-800'
-          }`}
-        >
-          {user.role === 'Administrator' ? (
-            <Image
-              src="/pictures/adminstra.png"
-              alt="Admin Icon"
-              width={20}
-              height={20}
-            />
-          ) : (
-            <Image
-              src="/pictures/viewer.png"
-              alt="Viewer Icon"
-              width={20}
-              height={20}
-            />
-          )}
-          Administrator
-        </span>
+        {user.roles && user.roles.length > 0 ? (
+          user.roles.map((roleData) => (
+            <span
+              key={roleData.role.id}
+              className={`inline-flex items-center gap-2 px-2 py-1 rounded text-sm ${
+                roleData.role.name === "Admin"
+                  ? "bg-purple-100 text-purple-800"
+                  : "bg-blue-100 text-blue-800"
+              }`}
+            >
+              <Image
+                src={
+                  roleData.role.name === "Admin"
+                    ? "/pictures/adminstra.png"
+                    : "/pictures/viewer.png"
+                }
+                alt={roleData.role.name}
+                width={20}
+                height={20}
+              />
+              {roleData.role.name}
+            </span>
+          ))
+        ) : (
+          <span className="text-gray-500">No roles assigned</span>
+        )}
       </td>
 
       <td className="px-4 py-3">{formatDate(user.last_login)}</td>

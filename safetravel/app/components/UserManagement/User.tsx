@@ -1,11 +1,13 @@
 export interface User {
-    id: string;
-    username: string;
-    name: string;
-    email: string;
-    role: "Administrator" | "Viewer";
-    status: "Active" | "Inactive";
-    last_login: string;
-    avatar: string;
-  }
-  
+  id: string;
+  username: string;
+  roles: {
+    role: {
+      id: string;
+      name: string;
+    };
+  }[];  
+  last_login: string;
+  status: string;
+  avatar: string;
+}
