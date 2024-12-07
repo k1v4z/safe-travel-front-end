@@ -11,17 +11,18 @@ import { User } from "../components/UserManagement/User";
 import { toast } from "react-toastify";
 
 const Home: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]); // Dữ liệu người dùng
+  const [users, setUsers] = useState<User[]>([]); // User list
   const [activeMenu, setActiveMenu] = useState("User");
-  const [showAddUserForm, setShowAddUserForm] = useState(false); // Hiển thị form thêm người dùng
+  const [showAddUserForm, setShowAddUserForm] = useState(false);
   const itemsPerPage = 10;
-  const [activePage, setActivePage] = useState(1); // Trang hiện tại
-  const [totalPages, setTotalPages] = useState(1); // Tổng số trang
-  const [loading, setLoading] = useState(true); // Trạng thái đang tải
-  const [error, setError] = useState<string | null>(null); // Lỗi khi gọi API
+  const [activePage, setActivePage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchUsername, setSearchUsername] = useState<string | null>(null);
+
   useEffect(() => {
-    if (searchUsername) return; // Không thực hiện phân trang khi đang tìm kiếm
+    if (searchUsername) return;
 
     setLoading(true);
     setError(null);
@@ -35,12 +36,13 @@ const Home: React.FC = () => {
             credentials: "include",
           }
         );
-
+  
         if (!response.ok) {
           throw new Error("Failed to fetch users.");
         }
-
+  
         const data = await response.json();
+        console.log("Fetched users:", data.users);  // Log dữ liệu users
         setUsers(data.users.users);
         setTotalPages(data.users.totalPages);
         setLoading(false);
@@ -49,12 +51,72 @@ const Home: React.FC = () => {
         setLoading(false);
       }
     };
+  
 
     fetchUsers();
-  }, [activePage]); // Chạy lại khi activePage thay đổi
+  }, [activePage]);
+  const handleUpdateRole = async (username: string, newRoleName: string) => {
+    if (!username || !newRoleName || newRoleName.trim() === "") {
+      toast.error("Username and role name are required.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/${username}/role`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newRole: newRoleName }),
+          credentials: "include",
+        }
+      );
+  
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        toast.error(errorDetails.message || "Failed to update role.");
+        return;
+      }
+  
+      const result = await response.json();
+
+  
+      // Update the user list with the new role information
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => {
+          if (user.username === username) {
+            // Update the role for the specific user
+            return {
+              ...user,
+              roles: user.roles.map((role) =>
+                role.role.name === newRoleName
+                  ? {
+                      ...role,
+                      role: {
+                        ...role.role,
+                        name: newRoleName, // Ensure the role name is updated
+                      },
+                    }
+                  : role
+              ),
+            };
+          }
+          return user; // No change for other users
+        })
+      );
+    } catch (error) {
+      console.error("Error updating role:", error);
+      toast.error("An error occurred while updating the role.");
+    }
+  };
+  
+  
+
   const handleSetStatus = async (username: string, currentStatus: string) => {
     const newStatus = currentStatus === "Active" ? "Inactive" : "Active";
-  
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/users/${username}/status`,
@@ -65,84 +127,73 @@ const Home: React.FC = () => {
           body: JSON.stringify({ status: newStatus }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Failed to update status.");
       }
-  
-      // Update state locally
+
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.username === username ? { ...user, status: newStatus } : user
         )
       );
-  
-      alert(`User ${username}'s status updated to ${newStatus}`);
+
+      toast.success(`User ${username}'s status updated to ${newStatus}`);
     } catch (error) {
-      console.error("Error updating user status:", error);
       toast.error("Failed to update user status.");
     }
   };
-  
-  // Hàm tìm kiếm user theo username
+
   const handleSearchUser = async (username: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/search/${username}`, {
-        method: "GET",
-        credentials: "include",
-      });
-  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/search/${username}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
       if (!response.ok) {
-        // Kiểm tra nếu là lỗi 404 (Không tìm thấy)
         if (response.status === 404) {
           alert(`No user found with username: "${username}".`);
-          return; // Giữ nguyên bảng hiện tại
+          return;
         }
         throw new Error(`Unexpected response: ${response.statusText}`);
       }
-  
+
       const data = await response.json();
-  
-      // Nếu API trả về dữ liệu rỗng
-      if (!data.user && (!data.users || data.users.length === 0)) {
-        alert(`No user found with username: "${username}".`);
-        return;
-      }
-  
-      // Cập nhật danh sách user nếu tìm thấy
       setUsers(data.user ? [data.user] : data.users);
     } catch (error) {
-      console.error("Error fetching user:", error);
       toast.error("An error occurred while fetching user.");
     }
   };
-  
-  
-  
 
-  // Thêm người dùng mới vào danh sách 
   const handleAddUser = (newUser: User) => {
     setUsers((prevUsers) => [newUser, ...prevUsers]);
     setShowAddUserForm(false);
   };
 
   const handleDeleteUser = async (username: string) => {
-    console.log("Deleting user:", username); // Kiểm tra username
     if (window.confirm(`Are you sure you want to delete user ${username}?`)) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${username}`, {
-          method: "DELETE", 
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${username}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+
         if (!response.ok) {
-          throw new Error('Failed to delete user');
+          throw new Error("Failed to delete user");
         }
-        setUsers((prevUsers) => 
-          prevUsers.filter((user) => user.username !== username) // Cập nhật danh sách
+
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user.username !== username)
         );
         toast.success("User deleted successfully");
       } catch (error) {
-        console.error("Error deleting user:", error);
         toast.error("Failed to delete user");
       }
     }
@@ -163,7 +214,7 @@ const Home: React.FC = () => {
               onAddUserClick={() => setShowAddUserForm(true)}
               onSearch={handleSearchUser} // Truyền hàm tìm kiếm vào FilterBar
             />            
-            <UserTable users={users} onDelete={handleDeleteUser} onSetStatus={handleSetStatus} />
+            <UserTable users={users} onDelete={handleDeleteUser} onSetStatus={handleSetStatus} onUpdateRole={handleUpdateRole} />
             {searchUsername === null && (
               <Pagination
                 activePage={activePage}
@@ -182,7 +233,7 @@ const Home: React.FC = () => {
               onAddUserClick={() => setShowAddUserForm(true)}
               onSearch={handleSearchUser} // Truyền hàm tìm kiếm vào FilterBar
             />
-            <UserTable users={users} onDelete={handleDeleteUser} onSetStatus={handleSetStatus} />
+            <UserTable users={users} onDelete={handleDeleteUser} onSetStatus={handleSetStatus} onUpdateRole={handleUpdateRole}/>
             {searchUsername === null && (
               <Pagination
                 activePage={activePage}

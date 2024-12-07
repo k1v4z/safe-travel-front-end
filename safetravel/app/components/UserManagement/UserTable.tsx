@@ -1,14 +1,37 @@
 import React from "react";
-import UserRow from "./UserRow"; // Hàng người dùng
+import UserRow from "./UserRow";
 import { User } from "./User";
+import { toast } from 'react-toastify';
 
 interface UserTableProps {
   users: User[];
   onDelete: (username: string) => void;
   onSetStatus: (username: string, currentStatus: string) => void;
+  onUpdateRole: (username: string, newRole: string) => Promise<void>;
 }
 
-const UserTable: React.FC<UserTableProps> = ({ users, onDelete,onSetStatus  }) => {
+const UserTable: React.FC<UserTableProps> = ({
+  users,
+  onDelete,
+  onSetStatus,
+  onUpdateRole,
+}) => {
+  // Hàm xử lý việc cập nhật vai trò người dùng
+  const handleUpdateRole = async (username: string, newRole: string) => {
+    if (!newRole) {
+      toast.error("Role name is required.");
+      return;
+    }
+
+    try {
+      await onUpdateRole(username, newRole);
+      toast.success(`Role updated to ${newRole} for ${username} successfully`);
+    } catch (error) {
+      toast.error("Error updating role.");
+      console.error(error);
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full border-collapse rounded-lg shadow-sm border border-gray-200">
@@ -27,14 +50,17 @@ const UserTable: React.FC<UserTableProps> = ({ users, onDelete,onSetStatus  }) =
         <tbody>
           {users.length > 0 ? (
             users.map((user) => (
-              <UserRow key={user.id} user={user} onDelete={onDelete} onSetStatus={onSetStatus}/>
+              <UserRow
+                key={user.id}
+                user={user}
+                onDelete={onDelete}
+                onSetStatus={onSetStatus}
+                onUpdateRole={(username, newRole) => handleUpdateRole(username, newRole)} // Sử dụng hàm handleUpdateRole
+              />
             ))
           ) : (
             <tr>
-              <td
-                colSpan={6}
-                className="text-center text-gray-500 text-sm py-4"
-              >
+              <td colSpan={6} className="text-center text-gray-500 text-sm py-4">
                 No users found.
               </td>
             </tr>

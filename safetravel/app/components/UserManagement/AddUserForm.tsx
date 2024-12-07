@@ -12,7 +12,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
-
+  const [role, setRole] = useState("Tourist"); // Default role
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +21,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
     setIsLoading(true);
     setError(null);
 
-    const newUser = { username, password, address,status: "Active" };
+    const newUser = { username, password, address, role, status: "Active" };
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
@@ -44,6 +44,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
       setUsername("");
       setPassword("");
       setAddress("");
+      setRole("Tourist"); // Reset to default role
       onClose();
     } catch (err: any) {
       setError(err.message);
@@ -59,7 +60,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
         <form onSubmit={handleSubmit}>
           {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
           <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium">Username</label>
+            <label htmlFor="username" className="block text-sm font-medium">
+              Username
+            </label>
             <input
               type="text"
               id="username"
@@ -70,7 +73,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium">
+              Password
+            </label>
             <input
               type="password"
               id="password"
@@ -81,7 +86,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="address" className="block text-sm font-medium">Address</label>
+            <label htmlFor="address" className="block text-sm font-medium">
+              Address
+            </label>
             <input
               type="text"
               id="address"
@@ -91,9 +98,36 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onAddUser, onClose }) => {
               required
             />
           </div>
+          <div className="mb-4">
+            <label htmlFor="role" className="block text-sm font-medium">
+              Role
+            </label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 border rounded mt-1"
+              required
+            >
+              <option value="Partner">Partner</option>
+              <option value="Owner">Owner</option>
+              <option value="Admin">Admin</option>
+              <option value="Tourist">Tourist</option>
+            </select>
+          </div>
           <div className="flex justify-end space-x-2">
-            <button type="button" onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={isLoading}>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              disabled={isLoading}
+            >
               {isLoading ? "Adding..." : "Add User"}
             </button>
           </div>
