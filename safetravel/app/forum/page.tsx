@@ -7,6 +7,7 @@ import Header from "../components/Header/Header";
 import Footer from "../components/Footer";
 import Post1 from '../components/Forum/Post1';
 import Post2 from '../components/Forum/Post2';
+import MainContents from '../components/Forum/MainContents';
 
 const App: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
@@ -29,25 +30,25 @@ const App: React.FC = () => {
 
     return (
 
-        <div className="min-h-screen flex flex-col bg-[#D2FBFD]">
+        <div className="bg-[#D2FBFD]">
             {/* Header */}
             <Header />
 
             {/* Main Content Section */}
-            <div className="flex flex-1">
+            <div className="flex flex-row justify-between">
                 {/* Sidebar */}
                 <Sidebar />
 
                 {/* Main Content */}
-                <main className="flex-grow p-4 bg-[#D2FBFD]">
-                    <MainContent
+                <main className=" bg-[#D2FBFD] w-full">
+                    <MainContents
                         // onShowModal={handleShowModal}
                     />
                     
                 </main>
 
                 {/* Optional Right Section (if needed) */}
-                <aside className="w-1/4 p-4 bg-white"></aside>
+                <aside className="max-w-xl w-4/12  bg-white "></aside>
             </div>
 
             {/* Modal */}
