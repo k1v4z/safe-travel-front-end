@@ -18,7 +18,6 @@ const RightSection = () => {
   return (
     <div className="hidden md:flex items-center space-x-2">
       <div className="flex items-center space-x-4">
-        <i className="fa fa-phone text-black text-lg"></i>
         <div className="font-poppins font-bold flex">
           <Image
             src={"/pictures/tele-icon.png"}
