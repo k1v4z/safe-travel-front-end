@@ -9,8 +9,10 @@ import Header from "../components/ActivityLocation/Header";
 import AddUserForm from "../components/UserManagement/AddUserForm";
 import { User } from "../components/UserManagement/User";
 import { toast } from "react-toastify";
+import { useAdminCheck } from "../hooks/useAdminCheck";
 
 const Home: React.FC = () => {
+  useAdminCheck();
   const [users, setUsers] = useState<User[]>([]); // User list
   const [activeMenu, setActiveMenu] = useState("User");
   const [showAddUserForm, setShowAddUserForm] = useState(false);

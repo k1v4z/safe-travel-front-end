@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import Header from "../components/ActivityLocation/Header";
 import Sidebar from "../components/ActivityLocation/Sidebar";
@@ -8,8 +8,10 @@ import EditModal from "../components/ActivityLocation/EditModal";
 import DeleteModal from "../components/ActivityLocation/DeleteModal";
 import Pagination from "../components/ActivityLocation/Pagination";
 import TripLocation from "../components/ActivityLocation/TripLocation";
+import { useAdminCheck } from "../hooks/useAdminCheck";
 
 const Trip: React.FC = () => {
+    useAdminCheck();
     const [activeMenu, setActiveMenu] = useState("Trip Location");
     const [activePage, setActivePage] = useState(1);
     const [locations, setLocations] = useState<Location[]>([]);
