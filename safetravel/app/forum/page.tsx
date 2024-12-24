@@ -40,7 +40,7 @@ const App: React.FC = () => {
                 <Sidebar />
 
                 {/* Main Content */}
-                <main className=" bg-[#D2FBFD] w-full">
+                <main className=" bg-[#D2FBFD] w-full max-w-3xl">
                     <MainContents
                         // onShowModal={handleShowModal}
                     />
@@ -48,7 +48,7 @@ const App: React.FC = () => {
                 </main>
 
                 {/* Optional Right Section (if needed) */}
-                <aside className="max-w-xl w-4/12  bg-white "></aside>
+                <aside className="max-w-xl w-4/12  bg-[#D2FBFD] "></aside>
             </div>
 
             {/* Modal */}

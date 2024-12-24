@@ -6,8 +6,8 @@ interface SidebarProps {
 }
 const Sidebar: React.FC = () => {
     return (
-        <aside className="max-w-xl w-4/12 p-4 pl-8 bg-white rounded-r h-screen flex flex-col items-start justify-start">
-            <div className="flex items-center mb-6 mt-3">
+        <aside className="max-w-72 w-full p-4 scroll pl-8 bg-white rounded-r h-screen flex flex-col items-center justify-start -ml-6">
+            <div className="flex items-center  mb-6 mt-3">
                 <img 
                     src="/pictures/ava.png" 
                     alt="User profile" 
