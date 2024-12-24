@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Posts from "./Posts";
 import AddYourPost from "./AddYourPost";
 import { toast } from "react-toastify";
+import useAuth from "@/app/hooks/useAuth";
 
 interface Post {
   id: string;
@@ -18,10 +19,18 @@ interface Post {
 }
 
 function MainContents() {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [postsData, setPostsData] = useState<Post[]>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [page, setPage] = useState(1);
-  const [newPost, setNewPost] = useState({
+  const [newPost, setNewPost] = useState<{
+    title: string;
+    content: string;
+    user_id: string;
+    image_urls: string[];
+    privacy: string;
+  }>({
     title: "",
     content: "",
     user_id: "user_12345", // Default user_id
@@ -37,12 +46,53 @@ function MainContents() {
     await fetchPosts(page + 1, 4);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedImages(Array.from(e.target.files));
+    }
+  };
+
+  
+
+  const uploadImages = async (): Promise<string[]> => {
+     let imageUrls = [];
+
+    for (const image of selectedImages) {
+      const formData = new FormData();
+      formData.append("images", image);
+      formData.append("folderName", "posts");
+
+      try {
+        const response = await fetch("http://localhost:8080/api/v1/upload", {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          console.log("Image uploaded:", data);
+          
+          imageUrls.push(data.imageUrl[0].url); 
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+
+    return imageUrls;
+  };
+
   const fetchPosts = async (page = 1, limit = 4) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts?page=${page}&limit=${limit}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/posts?page=${page}&limit=${limit}`,
+        {
+          method: "GET", 
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch posts. Status: ${response.status}`);
@@ -75,6 +125,9 @@ function MainContents() {
     if (postSubmitting) return;
     setPostSubmitting(true);
 
+    const imageUrls = await uploadImages();
+    console.log("Image URLs:", imageUrls);
+    
     console.log("New Post Data:", newPost); // Debug post data
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
@@ -84,7 +137,7 @@ function MainContents() {
           title: newPost.title || "",
           content: newPost.content || "",
           user_id: newPost.user_id || "user_12345",
-          image_urls: newPost.image_urls || [], // Send image URLs
+          image_urls: imageUrls || [], // Send image URLs
           privacy: newPost.privacy || "Private",
         }),
         headers: {
@@ -168,7 +221,10 @@ function MainContents() {
             </div>
             <button
               className="bg-[#326D7B] text-white px-6 py-2 rounded-full mt-2"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                setIsModalOpen(true);
+                console.log("Post image URL", newPost.image_urls);
+              }}
             >
               Post
             </button>
@@ -179,14 +235,12 @@ function MainContents() {
       {/* Display Posts */}
       {loading ? (
         <p>Loading posts...</p>
+      ) : postsData.length > 0 ? (
+        postsData.map((post) => (
+          <Posts key={post.id} post={post} setPostsData={setPostsData} />
+        ))
       ) : (
-        postsData.length > 0 ? (
-          postsData.map((post) => (
-            <Posts key={post.id} post={post} setPostsData={setPostsData} />
-          ))
-        ) : (
-          <p>No posts available.</p>
-        )
+        <p>No posts available.</p>
       )}
 
       <div className="flex justify-center mt-4">
@@ -241,7 +295,7 @@ function MainContents() {
 
             {/* Input Content */}
             <textarea
-              placeholder="How was your trip, Ashley Tran?"
+              placeholder="How was your trip"
               className="w-full h-20 rounded-lg p-2 mb-4"
               value={newPost.content}
               onChange={(e) =>
@@ -253,12 +307,20 @@ function MainContents() {
             ></textarea>
 
             {/* Add to Post */}
-            <AddYourPost setImageUrls={(imageUrls: string[]) => {
-        setNewPost((prevPost) => ({
-          ...prevPost,
-          image_urls: imageUrls,
-        }));
-      }} />
+            {/* <AddYourPost
+              setImageUrls={(imageUrls: string[]) => {
+                setNewPost((prevPost) => ({
+                  ...prevPost,
+                  image_urls: imageUrls,
+                }));
+              }}
+            /> */}
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
+            />
 
             {/* Post Button */}
             <button

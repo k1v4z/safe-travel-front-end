@@ -11,7 +11,7 @@ import MainContents from '../components/Forum/MainContents';
 
 const App: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
-    const [likes, setLikes] = useState(0);
+
     const [modalData, setModalData] = useState({ 
         postId: 0, 
         user: '', 
