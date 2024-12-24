@@ -9,10 +9,13 @@ interface KindChosenProps {
   onNext: () => void;
 }
 
-const SelfMade1 = ({onBack, onNext}: KindChosenProps) => {
+const SelfMade1 = ({ onBack, onNext }: KindChosenProps) => {
   const { plan, setPlan } = usePlanStore();
   const [selectedKind, setSelectedKind] = useState(plan.kind_name || "");
   const [haveChild, setHaveChild] = useState(false);
+  const [selectedActivityType, setSelectedActivityType] =
+    useState<string>("Food");
+  const activityTypes = ["Food", "Checkin", "Entertainment"];
 
   const handleKindClick = (kindName: string) => {
     setSelectedKind(kindName);
@@ -22,7 +25,7 @@ const SelfMade1 = ({onBack, onNext}: KindChosenProps) => {
   const handleHaveChildClick = (value: boolean) => {
     setHaveChild(value);
     setPlan({ ...plan, have_children: value });
-  }
+  };
 
   const handleNext = () => {
     if (!selectedKind) {
@@ -51,7 +54,9 @@ const SelfMade1 = ({onBack, onNext}: KindChosenProps) => {
         {trips.map((trip) => (
           <div
             key={trip.name}
-            className={`w-48 h-25 ${selectedKind == trip.name ? 'bg-[#1CD8D2] text-white' : 'bg-white' } rounded-2xl relative shadow-md flex items-center justify-center px-4 py-2 cursor-pointer  hover:bg-[#1CD8D2] hover:text-white transition-colors duration-300`}
+            className={`w-48 h-25 ${
+              selectedKind == trip.name ? "bg-[#1CD8D2] text-white" : "bg-white"
+            } rounded-2xl relative shadow-md flex items-center justify-center px-4 py-2 cursor-pointer  hover:bg-[#1CD8D2] hover:text-white transition-colors duration-300`}
             onClick={() => handleKindClick(trip.name)}
           >
             {/* Using Next.js Image component */}
@@ -70,13 +75,44 @@ const SelfMade1 = ({onBack, onNext}: KindChosenProps) => {
           </div>
         ))}
       </div>
-
+      <div className="mb-8">
+        <p className="text-xl mb-4">Select Activity Type</p>
+        <select
+          value={selectedActivityType}
+          onChange={(e) => {
+            const newType = e.target.value;
+            setSelectedActivityType(newType);
+            setPlan({ ...plan, type: newType });
+          }}
+          className="w-64 px-4 py-2 rounded-full bg-white border-2 border-[#1CD8D2] text-black font-semibold focus:outline-none focus:border-[#18A8A5]"
+        >
+          {activityTypes.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+      </div>
       <p className="text-xl mb-8">Are you traveling with children?</p>
       <div className="flex gap-5 mb-10">
-        <button onClick={() => {handleHaveChildClick(true)}} className={`px-10 py-2 rounded-full ${haveChild ? 'bg-[#1CD8D2] text-white' : 'bg-gray-300 text-black'} font-bold hover:bg-[#18A8A5] transition-colors duration-300`}>
+        <button
+          onClick={() => {
+            handleHaveChildClick(true);
+          }}
+          className={`px-10 py-2 rounded-full ${
+            haveChild ? "bg-[#1CD8D2] text-white" : "bg-gray-300 text-black"
+          } font-bold hover:bg-[#18A8A5] transition-colors duration-300`}
+        >
           Yes
         </button>
-        <button onClick={() => {handleHaveChildClick(false)}} className={`px-10 py-2 rounded-full ${!haveChild ? 'bg-[#1CD8D2] text-white' : 'bg-gray-300 text-black'} font-bold hover:bg-[#1CD8D2] hover:text-white transition-colors duration-300`}>
+        <button
+          onClick={() => {
+            handleHaveChildClick(false);
+          }}
+          className={`px-10 py-2 rounded-full ${
+            !haveChild ? "bg-[#1CD8D2] text-white" : "bg-gray-300 text-black"
+          } font-bold hover:bg-[#1CD8D2] hover:text-white transition-colors duration-300`}
+        >
           No
         </button>
       </div>

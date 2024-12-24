@@ -18,6 +18,7 @@ interface Plan {
     province_name: string;
     activities: Activity[];
     isAITrip?: boolean;
+    type: string;
 }
 
 interface PlanState {
@@ -37,7 +38,8 @@ const initialPlanState = {
     kind_name: '',
     province_name: 'Da Nang',
     activities: [],
-    isAITrip: false
+    isAITrip: false,
+    type: ''
 };
 
 const usePlanStore = create<PlanState>((set) => ({

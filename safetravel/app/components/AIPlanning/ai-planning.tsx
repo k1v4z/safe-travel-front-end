@@ -74,11 +74,13 @@ const AIPlanning = () => {
       const requestBody = {
         province: plan.province_name,
         planDate: convertISOToDate(plan.date),
+        type: plan.type
       };
 
+      console.log(requestBody);
+      
       console.log(convertISOToDate(plan.date));
       
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/suggest-location`,
         {
