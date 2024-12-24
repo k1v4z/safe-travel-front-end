@@ -1,18 +1,31 @@
 import React, { useState } from 'react';
 
-function AddYourPost() {
-  const [images, setImages] = useState([]); // State to hold selected images
+interface AddYourPostProps {
+  setImageUrls: (imageUrls: string[]) => void; // Prop to send image URLs to parent component
+}
+
+const AddYourPost: React.FC<AddYourPostProps> = ({ setImageUrls }) => {
+  const [images, setImages] = useState<string[]>([]); // State to hold selected images
 
   // Handle image selection
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files); // Convert FileList to Array
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []); // Convert FileList to Array
     const newImages = files.map(file => URL.createObjectURL(file)); // Generate object URLs for each image
-    setImages((prevImages) => [...prevImages, ...newImages]); // Add new images to the state
+    
+    setImages((prevImages) => {
+      const updatedImages = [...prevImages, ...newImages]; // Add new images to the state
+      setImageUrls(updatedImages); // Pass the new images array to the parent
+      return updatedImages;
+    });
   };
 
   // Remove image from the list
-  const handleRemoveImage = (index) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index)); // Remove the image by index
+  const handleRemoveImage = (index: number) => {
+    setImages((prevImages) => {
+      const updatedImages = prevImages.filter((_, i) => i !== index); // Remove the image by index
+      setImageUrls(updatedImages); // Pass the updated images array to the parent
+      return updatedImages;
+    });
   };
 
   return (
@@ -42,7 +55,7 @@ function AddYourPost() {
             src="pictures/picture.png"
             alt="Picture"
             className="w-6 h-6 cursor-pointer mt-1"
-            onClick={() => document.getElementById('image-upload').click()} // Trigger file input on icon click
+            onClick={() => document.getElementById('image-upload')?.click()} // Trigger file input on icon click
           />
           <img
             src="pictures/Smiley-Happy.png"
@@ -84,6 +97,6 @@ function AddYourPost() {
       />
     </div>
   );
-}
+};
 
 export default AddYourPost;
