@@ -6,8 +6,8 @@ interface SidebarProps {
 }
 const Sidebar: React.FC = () => {
     return (
-        <aside className="max-w-72 w-full p-4 scroll pl-8 bg-white rounded-r h-screen flex flex-col items-center justify-start -ml-6">
-            <div className="flex items-center  mb-6 mt-3">
+        <aside className="max-w-72 w-full p-4 scroll pl-8 bg-[#D2FBFD] rounded-r h-screen flex flex-col items-center justify-start -ml-6">
+            {/* <div className="flex items-center  mb-6 mt-3">
                 <img 
                     src="/pictures/ava.png" 
                     alt="User profile" 
@@ -30,7 +30,7 @@ const Sidebar: React.FC = () => {
                     className="w-5 h-5 mr-2" 
                 />
                 <span className="text-[#326D7B] font-bold">Trends for you</span>
-            </div>
+            </div> */}
         </aside>
         
     );

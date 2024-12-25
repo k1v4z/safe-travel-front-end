@@ -4,7 +4,7 @@ import InputCmtUser from './InputCmtUser';
 import Comment from './Comment';
 
 interface ModalsProps {
-  onClose: () => void; // Callback to close the modal
+  onClose: () => void;
   post: {
     id: string;
     user: {
@@ -16,15 +16,16 @@ interface ModalsProps {
       id: string;
       image_url: string;
     }[];
-  }; // Post data to display inside the modal
+  };
 }
+
 interface Comment {
   id: string;
   content: string;
   user: {
     username: string;
   };
-  createdAt: string;
+  createdAt: string; // Thống nhất sử dụng createdAt
 }
 
 const Modals: React.FC<ModalsProps> = ({ onClose, post }) => {
@@ -32,35 +33,38 @@ const Modals: React.FC<ModalsProps> = ({ onClose, post }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const limit = 2; // Number of comments per page
+  const limit = 2;
 
-const fetchComments = async (pageNumber: number) => {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/comment/post/${post.id}?page=${pageNumber}&limit=${limit}`
-    );
-    if (!response.ok) {
-      throw new Error('Failed to fetch comments');
+  const fetchComments = async (pageNumber: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/comment/post/${post.id}?page=${pageNumber}&limit=${limit}`
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments');
+      }
+
+      const data = await response.json();
+
+      setComments((prevComments) => {
+        const newComments = data.comments.map((comment: any) => ({
+          id: comment.id,
+          content: comment.content,
+          user: comment.user,
+          createdAt: comment.comment_date, // Ánh xạ comment_date từ API
+        }));
+
+        const existingIds = new Set(prevComments.map((comment) => comment.id));
+        return [...prevComments, ...newComments.filter((comment) => !existingIds.has(comment.id))];
+      });
+
+      if (data.comments.length < limit) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
     }
-
-    const data = await response.json();
-
-    setComments((prevComments) => {
-      // Use a Set to track unique IDs
-      const existingIds = new Set(prevComments.map((comment) => comment.id));
-      const newComments = data.comments.filter((comment: Comment) => !existingIds.has(comment.id));
-      return [...prevComments, ...newComments];
-    });
-    
-
-    if (data.comments.length < limit) {
-      setHasMore(false); // No more comments to load
-    }
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchComments(page);
@@ -73,7 +77,6 @@ const fetchComments = async (pageNumber: number) => {
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50 p-4">
       <div className="bg-white w-full md:w-2/3 lg:w-1/2 rounded-xl shadow-lg overflow-hidden">
-        {/* Header */}
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-lg font-bold">@{user.username}'s Post</h2>
           <button
@@ -84,7 +87,6 @@ const fetchComments = async (pageNumber: number) => {
           </button>
         </div>
 
-        {/* Post Details */}
         <div className="p-4 overflow-y-auto max-h-[70vh]">
           <PostUser
             id={post.id}
@@ -96,12 +98,15 @@ const fetchComments = async (pageNumber: number) => {
             onUpdate={() => {}}
           />
 
-          {/* Render Comments */}
           {comments.map((comment) => (
-            <Comment key={comment.id} {...comment} />
+            <Comment
+              key={comment.id}
+              user={comment.user}
+              content={comment.content}
+              createdAt={comment.createdAt} // Sử dụng createdAt đã ánh xạ
+            />
           ))}
 
-          {/* Load More Button */}
           {hasMore && (
             <button
               onClick={handleLoadMore}
@@ -112,7 +117,6 @@ const fetchComments = async (pageNumber: number) => {
           )}
         </div>
 
-        {/* Add Comment Section */}
         <div className="flex items-center p-4 border-t">
           <img
             src="/pictures/ava.png"

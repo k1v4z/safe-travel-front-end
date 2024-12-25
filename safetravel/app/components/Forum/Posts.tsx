@@ -24,7 +24,7 @@ interface CommentType {
   user: {
     username: string;
   };
-  createdAt: string;
+  createdAt: string; // Include createdAt to pass the timestamp to comment
 }
 
 function Posts({
@@ -53,10 +53,13 @@ function Posts({
         
         // Append new comments only if they are not already in the list
         setComments((prevComments) => {
-          const newComments = data.comments.filter(
-            (newComment: CommentType) =>
-              !prevComments.some((comment) => comment.id === newComment.id)
-          );
+          const newComments = data.comments.map((comment: any) => ({
+            id: comment.id,
+            content: comment.content,
+            user: comment.user,
+            createdAt: comment.comment_date, // map the timestamp
+          }));
+          
           return [...prevComments, ...newComments];
         });
 
@@ -108,7 +111,14 @@ function Posts({
       
       {/* Render Comments */}
       {comments.length > 0 ? (
-        comments.map((comment) => <Comment key={comment.id} {...comment} />)
+        comments.map((comment) => (
+          <Comment
+            key={comment.id}
+            user={comment.user}
+            content={comment.content}
+            createdAt={comment.createdAt} // Display createdAt with each comment
+          />
+        ))
       ) : (
         <div>No comments yet.</div> // Display message when no comments
       )}
@@ -127,7 +137,7 @@ function Posts({
       {showModal && (
         <Modals
           onClose={() => setShowModal(false)}
-          post={post} // Pass the post data to modal for detailed view
+          post={post} 
         />
       )}
 
