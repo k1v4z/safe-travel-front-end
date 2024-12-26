@@ -15,7 +15,7 @@ const SelfMade1 = ({ onBack, onNext }: KindChosenProps) => {
   const [haveChild, setHaveChild] = useState(false);
   const [selectedActivityType, setSelectedActivityType] =
     useState<string>("Food");
-  const activityTypes = ["Food", "Checkin", "Entertainment"];
+  const activityTypes = ["Food", "Checkin", "Museum", "Visit"];
 
   const handleKindClick = (kindName: string) => {
     setSelectedKind(kindName);
@@ -76,7 +76,7 @@ const SelfMade1 = ({ onBack, onNext }: KindChosenProps) => {
         ))}
       </div>
       <div className="mb-8">
-        <p className="text-xl mb-4">Select Activity Type</p>
+        <p className="text-xl mb-4">Hobby</p>
         <select
           value={selectedActivityType}
           onChange={(e) => {

@@ -1,12 +1,14 @@
+import usePlanStore from '@/app/stores/planStore';
 import Image from 'next/image';
 
 export default function TripHeader() {
+  const {plan} = usePlanStore();
   return (
     <div className="flex justify-between items-center bg-cyan-100 mt-3 relative">
       {/* Main content - Centered */}
       <div className="flex flex-col items-center justify-between flex-grow">
         <h1 className="text-lg font-semibold  mt-2 font-gideonroman">Let's review our recommendations for your trip</h1>
-        <h2 className="text-4xl font-bold my-2 leading-tight font-gideonroman">HUE</h2>
+        <h2 className="text-4xl font-bold my-2 leading-tight font-gideonroman">{plan.province_name}</h2>
         <p className=" mb-2 text-base font-inter ">Partner • November • 4 days</p>
       </div>
 
